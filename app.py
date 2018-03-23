@@ -66,13 +66,13 @@ def registerUser():
         cur.execute("SELECT * FROM users WHERE username = %s", [_username])
         if cur.rowcount == 0:
             cur.execute("INSERT INTO users(username, password) VALUES (%s, %s)", (_username, _password))
-            redirect(url_for('index'))
+            return redirect(url_for('index'))
         else:
             error = "That username is taken. Try again"
-            render_template('register', error=error)
+            return render_template('register.html', error=error)
     else:
         error = "Enter a valid username and password."
-        render_template('register', error=error)
+        return render_template('register.html', error=error)
 
 if __name__ == "__main__":
     app.run(debug=True)
