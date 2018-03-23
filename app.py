@@ -77,6 +77,7 @@ def registerUser():
         cur.execute("SELECT * FROM users WHERE username = %s", [_username])
         if cur.rowcount == 0:
             cur.execute("INSERT INTO users(username, password) VALUES (%s, %s)", (_username, _password))
+            conn.commit();
             return redirect(url_for('index'))
         else:
             error = "That username is taken. Try again"
