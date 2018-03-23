@@ -6,20 +6,13 @@ app = Flask(__name__)
 conn = MySQLdb.connect(host="localhost", user="root", password="pass", db="cs411flaskproject")
 app.config["SECRET_KEY"] = "secret-pass"
 
-
 @app.route('/')
 def index():
     if 'username' in session:
         username = session['username']
-        return 'Logged in as ' + username + '<br>' + \
-               "<b><a href = '/logout'>click here to log out</a></b>"
-
-
-    return "You are not logged in <br><a href = '/login'></b>" + \
-       "click here to log in</b></a>\n" + \
-    "<br><a href = '/register'></b>" + \
-       "click here to register</b></a>"
-
+        return render_template('logged_in.html', username=username)
+    else:
+        return render_template('not_loggedd_in.html')
 
 @app.route('/login')
 def login():
