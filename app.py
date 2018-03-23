@@ -1,5 +1,6 @@
 from flask import Flask
 from flask import request, redirect, render_template, url_for, session
+from flask_bootstrap import Bootstrap
 import MySQLdb
 
 app = Flask(__name__)
@@ -13,9 +14,10 @@ conn = MySQLdb.connect(host="us-cdbr-iron-east-05.cleardb.net",
                        user="b997f1857ff9ec",
                        password="5eb18692",
                        db="heroku_37da5348cc1f7c7")
-
-app.config["SECRET_KEY"] = "secret-pass"
 '''
+app.config["SECRET_KEY"] = "secret-pass"
+
+
 @app.route('/')
 def index():
     if 'username' in session:
