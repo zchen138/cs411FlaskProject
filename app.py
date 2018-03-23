@@ -3,18 +3,21 @@ from flask import request, redirect, render_template, url_for, session
 import MySQLdb
 
 app = Flask(__name__)
-'''
-conn = MySQLdb.connect(host="localhost",
-                       user="root",
-                       password="pass",
-                       db="cs411flaskproject")
-'''
-conn = MySQLdb.connect(host="us-cdbr-iron-east-05.cleardb.net",
-                       user="b997f1857ff9ec",
-                       password="5eb18692",
-                       db="heroku_37da5348cc1f7c7")
+
 
 app.config["SECRET_KEY"] = "secret-pass"
+def getConnection():
+    return MySQLdb.connect(host="us-cdbr-iron-east-05.cleardb.net",
+                           user="b997f1857ff9ec",
+                           password="5eb18692",
+                           db="heroku_37da5348cc1f7c7")
+
+    '''
+     MySQLdb.connect(host="localhost",
+                           user="root",
+                           password="pass",
+                           db="cs411flaskproject")
+    '''
 
 @app.route('/')
 def index():
@@ -31,10 +34,7 @@ def login():
 @app.route('/loginUser', methods=['GET', 'POST'])
 def loginUser():
     error = None
-    conn = MySQLdb.connect(host="us-cdbr-iron-east-05.cleardb.net",
-                           user="b997f1857ff9ec",
-                           password="5eb18692",
-                           db="heroku_37da5348cc1f7c7")
+    conn = getConnection()
     cur = conn.cursor()
 
     if request.method == 'POST':
@@ -65,10 +65,7 @@ def register():
 @app.route('/registerUser', methods=['POST'])
 def registerUser():
     error = None
-    conn = MySQLdb.connect(host="us-cdbr-iron-east-05.cleardb.net",
-                           user="b997f1857ff9ec",
-                           password="5eb18692",
-                           db="heroku_37da5348cc1f7c7")
+    conn = getConnection()
     cur = conn.cursor()
     _username = request.form['username']
     _password = request.form['password']
