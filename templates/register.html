@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Login</title>
+    <title>Register</title>
 </head>
 <body>
 
@@ -9,7 +9,7 @@
     <p class=error><strong>Error:</strong> {{ error }}
   {% endif %}
 
-    <form method="post" action="/loginUser">
+    <form method="post" action="/registerUser">
         <label>Username</label>
         <input id="username" name="username" type="text"/>
         <label>Password</label>
@@ -17,6 +17,6 @@
         <input type="submit"/>
     </form>
 
-    <a href="/register">register here</a>
+    <a href="/login">login here</a>
 </body>
 </html>
