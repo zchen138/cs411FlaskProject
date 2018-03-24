@@ -7,7 +7,7 @@
 
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-    <title>Logged In</title>
+    <title>123Movies 2: Electric Boogaloo</title>
 </head>
 <body>
 
@@ -16,13 +16,14 @@
   {% endif %}
 
     <b>Welcome to 123 Movies 2: Electric Boogaloo</b><br>
-    Logged in as {{ username }}.
-    <br><b><a href = '/logout'>click here to log out</a></b>
+        Logged in as {{ username }}.
+        <br><b><a href = '/logout'>click here to log out</a></b>
 
-    <form action = "/searchDatabase" method = post>
-         <fieldset>
-            <legend>Search 123Movies 2: Electric Boogaloo</legend>
-            {{ form.hidden_tag() }}
+        <!-- TODO Create searchResults function to do stuff with query -->
+        <form action = "/searchResults" method = post>
+             <fieldset>
+                <legend>Search 123Movies 2: Electric Boogaloo</legend>
+                {{ form.hidden_tag() }}
 
             <div style = "font-size:20px; font-weight:bold; margin-left:150px">
                {{ form.query }}
