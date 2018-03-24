@@ -1,12 +1,14 @@
 from flask import Flask
 from flask import request, redirect, render_template, url_for, session
-import MySQLdb
+from flask_wtf import Form
+from wtforms import StringField, SubmitField, SelectField, validators
 import objects as obj
+import MySQLdb
 
 app = Flask(__name__)
 app.debug=True
-
 app.config["SECRET_KEY"] = "secret-pass"
+
 def getConnection():
     '''
     return MySQLdb.connect(host="us-cdbr-iron-east-05.cleardb.net",
@@ -20,11 +22,29 @@ def getConnection():
                            password="pass",
                            db="cs411flaskproject")
 
+class MovieQueryForm(Form):
+    query = StringField([validators.DataRequired("Please enter a search term.")])
+    category = SelectField('Category', choices=[('movie', 'movie'), ('genre', 'genre'), ('year', 'year')])
+    submit = SubmitField("Search")
+
+@app.route('/homepage', methods=['GET', 'POST'])
+def homepage():
+    form = MovieQueryForm()
+    username = session['username']
+
+    if request.method == 'POST':
+        if not form.validate():
+            error = 'Enter a search term.'
+            return render_template('homepage.html', form=form, error=error, username=username)
+        else:
+            return render_template('homepage.html', form=form, username=username)
+    elif request.method == 'GET':
+        return render_template('homepage.html', form=form, username=username)
+
 @app.route('/')
 def index():
     if 'username' in session:
-        username = session['username']
-        return render_template('logged_in.html', username=username)
+        return redirect(url_for('homepage'))
     else:
         return render_template('not_logged_in.html')
 
@@ -110,8 +130,6 @@ def getProfile():
             movie_info_arr.append(cur_movie_obj)
 
         return render_template('profile.html', movieList=movie_info_arr, user=curUser)
-
-
 
 if __name__ == "__main__":
     app.run(debug=True)
