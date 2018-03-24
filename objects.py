@@ -1,14 +1,10 @@
 class User(object):
     userid = -1
     username = ""
-    movieIds = []
 
     def __init__(self, userid, username):
         self.userid = userid
         self.username = username
-
-    def addMovie(self, movieid):
-        self.movieIds = self.movieIds.append(movieid)
 
 class RatedMovie(object):
     movieid = -1

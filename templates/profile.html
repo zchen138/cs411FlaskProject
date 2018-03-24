@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Profile</title>
+</head>
+<body>
+
+{{ user.username }}
+<ul class="movies">
+  {% for movie in movieList %}
+  <li> <h2> {{ movie.title }} </h2>
+  <ul>
+    {{movie.releaseYear}}
+  </ul>
+  </li>
+    <li>{{movie.genre}}</li>
+    <li>{{movie.rating}}</li>
+    {% endfor %}
+</ul>
+
+
+</body>
+</html>
