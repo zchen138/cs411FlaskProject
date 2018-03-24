@@ -1,6 +1,7 @@
 from flask import Flask
 from flask import request, redirect, render_template, url_for, session
 import MySQLdb
+import objects as obj
 
 app = Flask(__name__)
 
@@ -42,10 +43,11 @@ def loginUser():
         _password = request.form['password']
         cur.execute("SELECT COUNT(1) FROM users WHERE username = %s;", [_username])
         if cur.fetchone()[0]:
-            cur.execute("SELECT password FROM users WHERE username = %s;", [_username])
+            cur.execute("SELECT * FROM users WHERE username = %s;", [_username])
             for row in cur.fetchall():
-                if _password == row[0]:
+                if _password == row[2]:
                     session['username'] = _username
+                    session['userid'] = row[0]
                     return redirect(url_for('index'))
                 else:
                     error = "Invalid username or password"
@@ -56,6 +58,7 @@ def loginUser():
 @app.route('/logout')
 def logout():
     session.pop('username', None)
+    session.pop('userid', None)
     return redirect(url_for('index'))
 
 @app.route('/register')
@@ -82,6 +85,10 @@ def registerUser():
     else:
         error = "Enter a valid username and password."
         return render_template('register.html', error=error)
+
+@app.route('/getProfile')
+def getProfile():
+    
 
 if __name__ == "__main__":
     app.run(debug=True)
