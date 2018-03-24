@@ -24,7 +24,7 @@ def getConnection():
 
 class MovieQueryForm(Form):
     query = StringField([validators.DataRequired("Please enter a search term.")])
-    category = SelectField('Category', choices=[('movie', 'movie'), ('genre', 'genre'), ('year', 'year')])
+    category = SelectField('Category', choices=[('title', 'title'), ('genre', 'genre'), ('year', 'year')])
     submit = SubmitField("Search")
 
 @app.route('/homepage', methods=['GET', 'POST'])
@@ -52,7 +52,12 @@ def search_results():
         print(query)
         conn = getConnection()
         cur = conn.cursor()
-        cur.execute("SELECT * FROM movieinfo WHERE %s = %s", (category, query)) # TODO move me to the redirect
+        if (category=='genre'):
+            cur.execute("SELECT * FROM movieinfo WHERE genre = %s", [query])
+        elif(category=='title'):
+            cur.execute("SELECT * FROM movieinfo WHERE title = %s", [query])
+        else:
+            cur.execute("SELECT * FROM movieinfo WHERE releaseYear = %s", [query])
         for row in cur.fetchmany(25):
             print(row)
 
