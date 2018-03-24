@@ -63,8 +63,6 @@ def search_results():
 
     return render_template('search_results.html')
 
-
-
 @app.route('/')
 def index():
     if 'username' in session:
