@@ -4,21 +4,21 @@ import MySQLdb
 import objects as obj
 
 app = Flask(__name__)
-
+app.debug=True
 
 app.config["SECRET_KEY"] = "secret-pass"
 def getConnection():
+    '''
     return MySQLdb.connect(host="us-cdbr-iron-east-05.cleardb.net",
                            user="b997f1857ff9ec",
                            password="5eb18692",
                            db="heroku_37da5348cc1f7c7")
 
     '''
-     MySQLdb.connect(host="localhost",
+    return MySQLdb.connect(host="localhost",
                            user="root",
                            password="pass",
                            db="cs411flaskproject")
-    '''
 
 @app.route('/')
 def index():
