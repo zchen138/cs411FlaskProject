@@ -88,7 +88,30 @@ def registerUser():
 
 @app.route('/getProfile')
 def getProfile():
-    
+
+    _username = session['username']
+    _userid = session['userid']
+    curUser = obj.createUser(_userid, _username)
+
+    error = None
+    conn = getConnection()
+    cur = conn.cursor()
+
+    if _username and _userid:
+        cur.execute("SELECT movieid, rating FROM rated WHERE userid = %s", [_userid])
+        movies_and_ratings = cur.fetchall()
+        movie_info_arr = []
+        for one_movie_rating in movies_and_ratings:
+            cur_movie_id = one_movie_rating[0]
+            cur_rating = one_movie_rating[1]
+            cur.execute("SELECT title, releaseYear, runtime, genre FROM movieinfo WHERE movieid = %s", [cur_movie_id])
+            movie_info = cur.fetchone()
+            cur_movie_obj = obj.createRatedMovie(cur_movie_id, movie_info[0], movie_info[1], movie_info[2], movie_info[3], cur_rating)
+            movie_info_arr.append(cur_movie_obj)
+
+        return render_template('profile.html', movieList=movie_info_arr, user=curUser)
+
+
 
 if __name__ == "__main__":
     app.run(debug=True)
