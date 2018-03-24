@@ -1,24 +1,47 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <title>Profile</title>
 </head>
 <body>
 
-{{ user.username }}
-<ul class="movies">
-  {% for movie in movieList %}
-  <li> <h2> {{ movie.title }} </h2>
-  <ul>
-    {{movie.releaseYear}}
-  </ul>
-  </li>
-    <li>{{movie.genre}}</li>
-    <li>{{movie.rating}}</li>
-    {% endfor %}
-</ul>
+  <div style="font-size:40px;position:absolute;left:15px;top:5px">
+    <strong>Profile | {{ user.username }}</strong><br>
+  </div>
 
+  <div style="font-size:30px;position:absolute;left:25px;top:60px">
+    <strong>My Movies</strong><br>
+  </div>
 
+  <div style = "position:absolute; top:110px; left:0px">
+      <form action = "/insertRating" method = post>
+          <fieldset>
+          <div style = "font-size:20px; font-weight:bold; margin-left:150px">
+              {% for rating_form in form2 %}
+                  {% for subfield in rating_form.rating %}
+                      {{ subfield.label }} {{ subfield }}
+                  {% endfor %}
+                  <input type="hidden" name="movieId" value={{ rating_form.movieId }}>
+                  {{ rating_form.submit }}
+                  <strong>{{ movieList[loop.index0].title}} {{ movieList[loop.index0].genre }}
+                      {{ movieList[loop.index0].releaseYear }} {{ movieList[loop.index0].runtime }}min</strong>
+                  <br>
+              {% endfor %}
+          </div>
+          </fieldset>
+      </form>
+  </div>
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
 </body>
 </html>

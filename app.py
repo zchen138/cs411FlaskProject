@@ -1,7 +1,7 @@
 from flask import Flask
 from flask import request, redirect, render_template, url_for, session
 from flask_wtf import Form
-from wtforms import StringField, SubmitField, SelectField, validators
+from wtforms import StringField, SubmitField, SelectField, RadioField, FieldList, FormField, validators
 import objects as obj
 import MySQLdb
 
@@ -41,33 +41,38 @@ def homepage():
     elif request.method == 'GET':
         return render_template('homepage.html', form=form, username=username)
 
+class RatingForm(Form):
+    rating = RadioField('Rating', choices=[('1', '1'), ('2', '2'), ('3', '3'), ('4', '4'), ('5', '5')])
+    submit = SubmitField("Rate")
+    movieId = 0
+
 @app.route('/first_search_results', methods=['GET', 'POST'])
 def search_results():
+    form1 = MovieQueryForm()
+    username = session['username']
+
     category = request.form['category']
     query = request.form['query']
 
     # If a search was made on re-rendering, perform query & display
     if query and category:
-        print(category)
-        print(query)
         conn = getConnection()
         cur = conn.cursor()
-        sqlStr = "SELECT * FROM movieinfo WHERE " + str(category) + " = %s LIMIT 5 OFFSET 0"
+        sqlStr = "SELECT * FROM movieinfo WHERE " + str(category) + " = %s LIMIT 10 OFFSET 0"
         cur.execute(sqlStr, [query])
-        for row in cur.fetchmany(25):
-            print(row)
 
-    form = MovieQueryForm()
-    username = session['username']
+        movieArr = []
+        rating_forms = []
+        for movie_info in cur.fetchall():
+            cur_movie_obj = obj.createMovie(movie_info[0], movie_info[1], movie_info[2], movie_info[3], movie_info[4])
+            movieArr.append(cur_movie_obj)
+            rating_form = RatingForm()
+            rating_form.movieId = movie_info[0]
+            rating_forms.append(rating_form)
 
-    if request.method == 'POST':
-        if not form.validate():
-            error = 'Enter a search term.'
-            return render_template('search_results.html', form=form, error=error, username=username)
-        else:
-            return render_template('search_results.html', form=form, username=username)
-    elif request.method == 'GET':
-        return render_template('search_results.html', form=form, username=username)
+        return render_template('search_results.html', form1=form1, form2=rating_forms, username=username, movies=movieArr)
+
+    return render_template('homepage.html', form1=form1, username=username, error="Enter a search term")
 
 @app.route('/')
 def index():
@@ -134,8 +139,8 @@ def registerUser():
         error = "Enter a valid username and password."
         return render_template('register.html', error=error)
 
-@app.route('/getProfile')
-def getProfile():
+@app.route('/profile')
+def profile():
 
     _username = session['username']
     _userid = session['userid']
@@ -149,6 +154,7 @@ def getProfile():
         cur.execute("SELECT movieid, rating FROM rated WHERE userid = %s", [_userid])
         movies_and_ratings = cur.fetchall()
         movie_info_arr = []
+        rating_forms = []
         for one_movie_rating in movies_and_ratings:
             cur_movie_id = one_movie_rating[0]
             cur_rating = one_movie_rating[1]
@@ -156,8 +162,28 @@ def getProfile():
             movie_info = cur.fetchone()
             cur_movie_obj = obj.createRatedMovie(cur_movie_id, movie_info[0], movie_info[1], movie_info[2], movie_info[3], cur_rating)
             movie_info_arr.append(cur_movie_obj)
+            rating_form = RatingForm()
+            rating_form.movieId = movie_info[0]
+            rating_forms.append(rating_form)
 
-        return render_template('profile.html', movieList=movie_info_arr, user=curUser)
+        return render_template('profile.html', movieList=movie_info_arr, form2=rating_forms, user=curUser)
+
+# TODO In profile, have the form action go to a re-rate/update function, Delete button that goes to a delete function,
+# TODO advanced queries and integration, import data properly
+
+@app.route('/insertRating', methods=['GET', 'POST'])
+def insertRating():
+    _userid = session['userid']
+    movieid = request.form['movieId']
+    rating = request.form['rating']
+
+    conn = getConnection()
+    cur = conn.cursor()
+    sqlStr = "INSERT INTO rated VALUES (%s, %s, %s)"
+    cur.execute(sqlStr, (_userid, movieid, rating))
+    conn.commit()
+
+    return redirect(url_for('index'))
 
 if __name__ == "__main__":
     app.run(debug=True)

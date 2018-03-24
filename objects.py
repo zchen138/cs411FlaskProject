@@ -6,6 +6,20 @@ class User(object):
         self.userid = userid
         self.username = username
 
+class Movie(object):
+    movieid = -1
+    title = ""
+    releaseYear = -1
+    runtime = -1
+    genre = ""
+
+    def __init__(self, movieid, title, releaseYear, runtime, genre):
+        self.movieid = movieid
+        self.title = title
+        self.releaseYear = releaseYear
+        self.runtime = runtime
+        self.genre = genre
+
 class RatedMovie(object):
     movieid = -1
     title = ""
@@ -22,6 +36,8 @@ class RatedMovie(object):
         self.genre = genre
         self.rating = rating
 
+
+
 def createUser(userid, username):
     user = User(userid, username)
     return user
@@ -29,4 +45,8 @@ def createUser(userid, username):
 def createRatedMovie(movieid, title, releaseYear, runtime, genre, rating):
     ratedMovie = RatedMovie(movieid, title, releaseYear, runtime, genre, rating)
     return ratedMovie
+
+def createMovie(movieid, title, releaseYear, runtime, genre):
+    movie = Movie(movieid, title, releaseYear, runtime, genre)
+    return movie
 
