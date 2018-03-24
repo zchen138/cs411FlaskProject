@@ -46,6 +46,13 @@ class RatingForm(Form):
     submit = SubmitField("Rate")
     movieId = 0
 
+class ChangeRatingForm(Form):
+    rating = RadioField('Rating', choices=[('1', '1'), ('2', '2'), ('3', '3'), ('4', '4'), ('5', '5')])
+    update = SubmitField("Update")
+    remove = SubmitField("Remove")
+    movieId = 0
+
+
 @app.route('/first_search_results', methods=['GET', 'POST'])
 def search_results():
     form1 = MovieQueryForm()
@@ -155,6 +162,7 @@ def profile():
         movies_and_ratings = cur.fetchall()
         movie_info_arr = []
         rating_forms = []
+        delete_forms = []
         for one_movie_rating in movies_and_ratings:
             cur_movie_id = one_movie_rating[0]
             cur_rating = one_movie_rating[1]
@@ -162,8 +170,9 @@ def profile():
             movie_info = cur.fetchone()
             cur_movie_obj = obj.createRatedMovie(cur_movie_id, movie_info[0], movie_info[1], movie_info[2], movie_info[3], cur_rating)
             movie_info_arr.append(cur_movie_obj)
-            rating_form = RatingForm()
-            rating_form.movieId = movie_info[0]
+
+            rating_form = ChangeRatingForm()
+            rating_form.movieId = cur_movie_id
             rating_forms.append(rating_form)
 
         return render_template('profile.html', movieList=movie_info_arr, form2=rating_forms, user=curUser)
@@ -179,11 +188,40 @@ def insertRating():
 
     conn = getConnection()
     cur = conn.cursor()
-    sqlStr = "INSERT INTO rated VALUES (%s, %s, %s)"
-    cur.execute(sqlStr, (_userid, movieid, rating))
-    conn.commit()
+
+    sqlStr = "SELECT * FROM rated WHERE userid = %s AND movieid = %s"
+    cur.execute(sqlStr, (_userid, movieid))
+    if cur.fetchone(): # Check for duplicates
+        sqlStr = "UPDATE rated SET rating = %s WHERE userid = %s AND movieid = %s"
+        cur.execute(sqlStr, (rating, _userid, movieid))
+        conn.commit()
+    else:
+        sqlStr = "INSERT INTO rated VALUES (%s, %s, %s)"
+        cur.execute(sqlStr, (_userid, movieid, rating))
+        conn.commit()
 
     return redirect(url_for('index'))
+
+
+@app.route('/updateRating', methods=['GET', 'POST'])
+def updateRating():
+    _userid = session['userid']
+    movieid = request.form['movieId']
+    conn = getConnection()
+    cur = conn.cursor()
+
+    if 'update' in request.form:
+        rating = request.form['rating']
+        sqlStr = "UPDATE rated SET rating = %s WHERE userid = %s AND movieid = %s"
+        cur.execute(sqlStr, (rating, _userid, movieid))
+    elif 'remove' in request.form:
+        sqlStr = "DELETE FROM rated WHERE userid = %s AND movieid = %s"
+        cur.execute(sqlStr, (_userid, movieid))
+    conn.commit()
+
+    return redirect(url_for('profile'))
+
+
 
 if __name__ == "__main__":
     app.run(debug=True)

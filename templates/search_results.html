@@ -25,10 +25,10 @@
     <div style = "float:right; border-style:solid; border-width:1px; margin:10px; padding:5px">
         <form action = "/first_search_results" method = post>
              <fieldset>
-                <legend style= "text-align:right">Search 123Movies 2: Electric Boogaloo</legend>
+                <legend style= "text-align:left">Search 123Movies 2: Electric Boogaloo</legend>
                 {{ form1.hidden_tag() }}
 
-            <div style = "font-size:20px; font-weight:bold; margin-left:150px">
+            <div style = "font-size:20px; font-weight:bold; margin-left:100px">
                {{ form1.query }}
 
                {{ form1.category }}
@@ -39,12 +39,12 @@
         </form>
     </div>
 
-    <div style = "position:absolute; top:120px; left:0px">
+    <div style = "position:absolute; top:90px; left:0px">
         <form action = "/insertRating" method = post>
             <fieldset>
-                <legend style= "text-align:right">Search Results</legend>
+                <legend style= "text-align:left;margin:25px">Search Results</legend>
 
-            <div style = "font-size:20px; font-weight:bold; margin-left:150px">
+            <div style = "font-size:20px; font-weight:bold; margin-left:25px">
                 {% for rating_form in form2 %}
                     {% for subfield in rating_form.rating %}
                         {{ subfield.label }} {{ subfield }}
