@@ -41,6 +41,25 @@ def homepage():
     elif request.method == 'GET':
         return render_template('homepage.html', form=form, username=username)
 
+@app.route('/first_search_results', methods=['GET', 'POST'])
+def search_results():
+    category = request.form['category']
+    query = request.form['query']
+
+    # If a search was made on re-rendering, perform query & display
+    if query and category:
+        print(category)
+        print(query)
+        conn = getConnection()
+        cur = conn.cursor()
+        cur.execute("SELECT * FROM movieinfo WHERE %s = %s", (category, query)) # TODO move me to the redirect
+        for row in cur.fetchmany(25):
+            print(row)
+
+    return render_template('search_results.html')
+
+
+
 @app.route('/')
 def index():
     if 'username' in session:
