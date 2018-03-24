@@ -61,7 +61,17 @@ def search_results():
         for row in cur.fetchmany(25):
             print(row)
 
-    return render_template('search_results.html')
+    form = MovieQueryForm()
+    username = session['username']
+
+    if request.method == 'POST':
+        if not form.validate():
+            error = 'Enter a search term.'
+            return render_template('search_results.html', form=form, error=error, username=username)
+        else:
+            return render_template('search_results.html', form=form, username=username)
+    elif request.method == 'GET':
+        return render_template('search_results.html', form=form, username=username)
 
 @app.route('/')
 def index():
