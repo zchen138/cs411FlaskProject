@@ -52,12 +52,8 @@ def search_results():
         print(query)
         conn = getConnection()
         cur = conn.cursor()
-        if (category=='genre'):
-            cur.execute("SELECT * FROM movieinfo WHERE genre = %s", [query])
-        elif(category=='title'):
-            cur.execute("SELECT * FROM movieinfo WHERE title = %s", [query])
-        else:
-            cur.execute("SELECT * FROM movieinfo WHERE releaseYear = %s", [query])
+        sqlStr = "SELECT * FROM movieinfo WHERE " + str(category) + " = %s LIMIT 5 OFFSET 0"
+        cur.execute(sqlStr, [query])
         for row in cur.fetchmany(25):
             print(row)
 
