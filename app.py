@@ -55,6 +55,8 @@ class ChangeRatingForm(Form):
 
 @app.route('/first_search_results', methods=['GET', 'POST'])
 def search_results():
+    if 'username' not in session:
+        return redirect(url_for('homepage'))
     form1 = MovieQueryForm()
     username = session['username']
 
@@ -148,7 +150,8 @@ def registerUser():
 
 @app.route('/profile')
 def profile():
-
+    if 'username' not in session:
+        return redirect(url_for('homepage'))
     _username = session['username']
     _userid = session['userid']
     curUser = obj.createUser(_userid, _username)
@@ -168,20 +171,51 @@ def profile():
             cur_rating = one_movie_rating[1]
             cur.execute("SELECT title, releaseYear, runtime, genre FROM movieinfo WHERE movieid = %s", [cur_movie_id])
             movie_info = cur.fetchone()
-            cur_movie_obj = obj.createRatedMovie(cur_movie_id, movie_info[0], movie_info[1], movie_info[2], movie_info[3], cur_rating)
+            cur_movie_obj = obj.createRatedMovie(cur_movie_id, movie_info[0], movie_info[1], movie_info[2], movie_info[3], cur_rating, 0)
             movie_info_arr.append(cur_movie_obj)
 
             rating_form = ChangeRatingForm()
             rating_form.movieId = cur_movie_id
             rating_forms.append(rating_form)
 
-        return render_template('profile.html', movieList=movie_info_arr, form2=rating_forms, user=curUser)
+        sqlStr = "SELECT COUNT(movieinfo.movieid), movieinfo.genre FROM rated, movieinfo WHERE rated.userid = %s AND " \
+                 "rated.movieid = movieinfo.movieid " \
+                 "GROUP BY genre;"
 
-# TODO In profile, have the form action go to a re-rate/update function, Delete button that goes to a delete function,
+        cur.execute(sqlStr, [_userid])
+        pairArr = []
+        for pair in cur.fetchall():
+            pairObj = obj.createGroupMovie(pair[1], pair[0])
+            pairArr.append(pairObj)
+
+        return render_template('profile.html', movieList=movie_info_arr, form2=rating_forms, user=curUser, counts=pairArr)
+
 # TODO advanced queries and integration, import data properly
+
+@app.route('/users')
+def users():
+    if 'username' not in session:
+        return redirect(url_for('homepage'))
+    _userid = session['userid']
+    conn = getConnection()
+    cur = conn.cursor()
+
+    users = []
+    cur.execute("SELECT userid,username FROM users WHERE userid != %s", [_userid])
+    for user in cur.fetchall():
+        userObj = obj.createUser(user[0], user[1])
+        users.append(userObj)
+
+    return render_template('users.html', users=users)
+'''
+@app.route('/viewUser')
+def viewUser():
+'''
 
 @app.route('/insertRating', methods=['GET', 'POST'])
 def insertRating():
+    if 'username' not in session:
+        return redirect(url_for('homepage'))
     _userid = session['userid']
     movieid = request.form['movieId']
     rating = request.form['rating']
@@ -202,9 +236,10 @@ def insertRating():
 
     return redirect(url_for('index'))
 
-
 @app.route('/updateRating', methods=['GET', 'POST'])
 def updateRating():
+    if 'username' not in session:
+        return redirect(url_for('homepage'))
     _userid = session['userid']
     movieid = request.form['movieId']
     conn = getConnection()
@@ -221,7 +256,33 @@ def updateRating():
 
     return redirect(url_for('profile'))
 
+@app.route('/users/<userid>')
+def viewUser(userid):
+    curUserId = session['userid']
 
+    conn = getConnection()
+    cur = conn.cursor()
+
+    sqlStr = "SELECT movieid, rating FROM rated WHERE userid = %s AND movieid IN (SELECT movieid FROM rated WHERE userid = %s)"
+    cur.execute(sqlStr, ( userid, curUserId))
+
+    movieArr = []
+    for movie in cur.fetchall():
+        movieid = movie[0]
+        movieRating = movie[1]
+        cur.execute("SELECT title, releaseYear, runtime, genre FROM movieinfo WHERE movieid = %s", [movieid])
+        movie_info = cur.fetchone()
+        cur.execute("SELECT rating FROM rated WHERE userid = %s AND movieid = %s", (curUserId, movieid))
+        myRating = cur.fetchone()[0]
+        cur_movie_obj = obj.createRatedMovie(movieid, movie_info[0], movie_info[1], movie_info[2], movie_info[3],
+                                             movieRating, myRating)
+        movieArr.append(cur_movie_obj)
+
+    sqlStr = "SELECT username FROM users WHERE userid = %s"
+    cur.execute(sqlStr, [userid])
+    otherUser = cur.fetchone()[0]
+
+    return render_template('view_user.html', movies=movieArr, otherUser=otherUser)
 
 if __name__ == "__main__":
     app.run(debug=True)
