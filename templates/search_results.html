@@ -44,12 +44,12 @@
     </div>
 
     <div style = "position:absolute; top:90px; left:0px">
-        <form action = "/insertRating" method = post>
             <fieldset>
                 <legend style= "text-align:left;margin:25px">Search Results</legend>
 
             <div style = "font-size:20px; font-weight:bold; margin-left:25px">
                 {% for rating_form in form2 %}
+                <form action = "/insertRating" method = post>
                     {% for subfield in rating_form.rating %}
                         {{ subfield.label }} {{ subfield }}
                     {% endfor %}
@@ -58,10 +58,10 @@
                     <strong>{{ movies[loop.index0].title}} {{ movies[loop.index0].genre }}
                         {{ movies[loop.index0].releaseYear }} {{ movies[loop.index0].runtime }}min</strong>
                     <br>
+                </form>
                 {% endfor %}
             </div>
             </fieldset>
-        </form>
     </div>
 
     <!-- TODO Display dynamic generation of results -->

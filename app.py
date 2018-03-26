@@ -10,7 +10,7 @@ app.debug=True
 app.config["SECRET_KEY"] = "secret-pass"
 
 def getConnection():
-
+    '''
     return MySQLdb.connect(host="us-cdbr-iron-east-05.cleardb.net",
                            user="b997f1857ff9ec",
                            password="5eb18692",
@@ -21,7 +21,7 @@ def getConnection():
                            user="root",
                            password="pass",
                            db="cs411flaskproject")
-    '''
+    
 class MovieQueryForm(Form):
     query = StringField([validators.DataRequired("Please enter a search term.")])
     category = SelectField('Category', choices=[('title', 'title'), ('genre', 'genre'), ('releaseYear', 'releaseYear')])
@@ -245,6 +245,7 @@ def updateRating():
     conn = getConnection()
     cur = conn.cursor()
 
+    print(movieid)
     if 'update' in request.form:
         rating = request.form['rating']
         sqlStr = "UPDATE rated SET rating = %s WHERE userid = %s AND movieid = %s"
