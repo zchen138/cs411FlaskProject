@@ -52,7 +52,6 @@ class ChangeRatingForm(Form):
     remove = SubmitField("Remove")
     movieId = 0
 
-
 @app.route('/first_search_results', methods=['GET', 'POST'])
 def search_results():
     if 'username' not in session:
@@ -211,6 +210,26 @@ def users():
 @app.route('/viewUser')
 def viewUser():
 '''
+@app.route('/recommend', methods = ['GET', 'POST'])
+def recommend():
+    if 'username' not in session:
+        return redirect(url_for('homepage'))
+    _userid = session['userid']
+
+    conn = getConnection()
+    cur = conn.cursor()
+
+    sqlStr = "SELECT movieId, rating FROM rated WHERE userid = %s"    
+    cur.execute(sqlStr, [_userid])
+
+    for data in cur.fetchall():
+        userRating = data[1]
+        cur_movie_id = data[0]
+        sqlStr = "SELECT * FROM movieinfo WHERE movieid = %s"
+        cur.execute(sqlStr, [cur_movie_id])
+        movieInformation = cur.fetchone()
+        
+
 
 @app.route('/insertRating', methods=['GET', 'POST'])
 def insertRating():
