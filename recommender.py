@@ -2,6 +2,7 @@ import objects as obj
 
 def recommendation(movies, allMovies):
 	#movies in an array of movies that the user has rated
+	# allMovies are all movies
 	topten = []
 
 	if len(movies) <= 10:
@@ -73,7 +74,15 @@ def recommendation(movies, allMovies):
 
 	# allScores is filled
 	newScores = []
+	for row in allScores:
+		newScores.append(sum(row))
 
-	for scores in allScores:
-		
+	maxscore = -5
+	maxi = 0
+	for i in range(len(newScores)):
+		if (newScores[i] > maxscore and allMovies[i] not in movies):
+			maxi = i
+			maxscore = newScores[i]
+
+	return allMovies[maxi]
 		
