@@ -1,6 +1,13 @@
 import csv
 from unidecode import unidecode
 
+def getMainGenre(items):
+    genreList = ["actionMovie", "adult", "adventure", "animation", "biography", "comedy", "crime", "documentary", "drama", "family", "fantasy", "filmNoir", "history", "horror", "mystery", "romance", "SciFi", "short", "sport","thriller", "war", "western"]
+    for i in range (16, 38):
+        if items[i]!="0":
+            return genreList[i-16]
+
+
 def convertSecondsToMinutes(seconds):
     intSec = int(seconds)
     intMin = intSec/60
@@ -14,7 +21,7 @@ with open("imdbmovies.csv", "r") as csvfile:
         i += 1
         try:
             items = next(reader)
-            pline = "INSERT INTO movieinfo(mid, title, year, duration, rating, numRatings, " + "numWins, numGenres, action, adult, adventure, animation, biography, "
+            pline = "INSERT INTO movieinfo(movieid, title, releaseYear, duration, rating, numRatings, " + "numWins, numGenres, genre, actionMovie, adult, adventure, animation, biography, "
             pline = pline + "comedy, crime, documentary, drama, family, fantasy, filmNoir, "
             pline = pline +  "history, horror, mystery, romance, SciFi, short, sport, "
             pline = pline + "thriller, war, western) VALUES ("
@@ -24,12 +31,12 @@ with open("imdbmovies.csv", "r") as csvfile:
             titleStr = unidecode(titleStr)
             titleStr = titleStr.replace("\"", "")
             titleStr = titleStr.replace("<", "")
-            print(titleStr)
             pline = pline + "\"" + titleStr + "\" "
             pline = pline +  ", " + items[8] + ", " + convertSecondsToMinutes(items[7]) +  ", " + items[5] + ", " + items[6]
-            pline = pline + ", " + items[10] + ", " + items[15]
+            pline = pline + ", " + items[10] + ", " + items[15] +", " + "\"" + getMainGenre(items) +"\""
+
             pline = pline + ", " + items[16] + ", " + items[17] + ", " + items[18] + ", " + items[19] + ", " + items[20] + ", " + items[21] + ", " + items[22] + ", " + items[23] + ", " + items[24] + ", " + items[25] + ", " + items[26] + ", " + items[27] + ", " + items[28] + ", " + items[29] + ", " + items[30] + ", " + items[31] + ", " + items[32] + ", " + items[33] + ", " + items[34] + ", " + items[35] + ", " + items[36] + ", " + items[37]
-            pline = pline + ")\n"
+            pline = pline + ");\n"
             print(pline)
             output_file.write(pline)
         except:
