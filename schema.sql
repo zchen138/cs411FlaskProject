@@ -26,7 +26,7 @@ CREATE TABLE moviedata(
 	movieid int(11) NOT NULL AUTO_INCREMENT,
     title varchar(255) DEFAULT NULL,
     releaseYear int(11) DEFAULT NULL,
-    duration int(11) DEFAULT NULL,
+    runtime int(11) DEFAULT NULL,
     rating float(11) DEFAULT NULL,
     numRatings int(11) DEFAULT NULL,
     numWins int(11) DEFAULT NULL,
