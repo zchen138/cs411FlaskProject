@@ -66,13 +66,13 @@ def search_results():
     if query and category:
         conn = getConnection()
         cur = conn.cursor()
-        sqlStr = "SELECT * FROM movieinfo WHERE " + str(category) + " = %s LIMIT 10 OFFSET 0"
+        sqlStr = "SELECT * FROM moviedata WHERE " + str(category) + " = %s LIMIT 10 OFFSET 0"
         cur.execute(sqlStr, [query])
 
         movieArr = []
         rating_forms = []
         for movie_info in cur.fetchall():
-            cur_movie_obj = obj.createMovie(movie_info[0], movie_info[1], movie_info[2], movie_info[3], movie_info[4])
+            cur_movie_obj = obj.createMovie(movie_info[0], movie_info[1], movie_info[2], movie_info[3], movie_info[8])
             movieArr.append(cur_movie_obj)
             rating_form = RatingForm()
             rating_form.movieId = movie_info[0]
@@ -168,7 +168,7 @@ def profile():
         for one_movie_rating in movies_and_ratings:
             cur_movie_id = one_movie_rating[0]
             cur_rating = one_movie_rating[1]
-            cur.execute("SELECT title, releaseYear, runtime, genre FROM movieinfo WHERE movieid = %s", [cur_movie_id])
+            cur.execute("SELECT title, releaseYear, runtime, genre FROM moviedata WHERE movieid = %s", [cur_movie_id])
             movie_info = cur.fetchone()
             cur_movie_obj = obj.createRatedMovie(cur_movie_id, movie_info[0], movie_info[1], movie_info[2], movie_info[3], cur_rating, 0)
             movie_info_arr.append(cur_movie_obj)
@@ -177,8 +177,8 @@ def profile():
             rating_form.movieId = cur_movie_id
             rating_forms.append(rating_form)
 
-        sqlStr = "SELECT COUNT(movieinfo.movieid), movieinfo.genre FROM rated, movieinfo WHERE rated.userid = %s AND " \
-                 "rated.movieid = movieinfo.movieid " \
+        sqlStr = "SELECT COUNT(moviedata.movieid), moviedata.genre FROM rated, moviedata WHERE rated.userid = %s AND " \
+                 "rated.movieid = moviedata.movieid " \
                  "GROUP BY genre;"
 
         cur.execute(sqlStr, [_userid])
@@ -225,7 +225,7 @@ def recommend():
     for data in cur.fetchall():
         userRating = data[1]
         cur_movie_id = data[0]
-        sqlStr = "SELECT * FROM movieinfo WHERE movieid = %s"
+        sqlStr = "SELECT * FROM moviedata WHERE movieid = %s"
         cur.execute(sqlStr, [cur_movie_id])
         movieInformation = cur.fetchone()
         
@@ -290,7 +290,7 @@ def viewUser(userid):
     for movie in cur.fetchall():
         movieid = movie[0]
         movieRating = movie[1]
-        cur.execute("SELECT title, releaseYear, runtime, genre FROM movieinfo WHERE movieid = %s", [movieid])
+        cur.execute("SELECT title, releaseYear, runtime, genre FROM moviedata WHERE movieid = %s", [movieid])
         movie_info = cur.fetchone()
         cur.execute("SELECT rating FROM rated WHERE userid = %s AND movieid = %s", (curUserId, movieid))
         myRating = cur.fetchone()[0]
