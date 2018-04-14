@@ -7,6 +7,16 @@ def getMainGenre(items):
         if items[i]!="0":
             return genreList[i-16]
 
+def processNull(items):
+    arr = []
+    for item in items:
+        if len(item)==0:
+            arr.append(0)
+        else:
+            arr.append(item)
+
+    return arr
+
 
 def convertSecondsToMinutes(seconds):
     intSec = int(seconds)
@@ -21,6 +31,7 @@ with open("imdbmovies.csv", "r") as csvfile:
         i += 1
         try:
             items = next(reader)
+            items = processNull(items)
             pline = "INSERT INTO moviedata(movieid, title, releaseYear, runtime, rating, numRatings, " + "numWins, numGenres, genre, actionMovie, adult, adventure, animation, biography, "
             pline = pline + "comedy, crime, documentary, drama, family, fantasy, filmNoir, "
             pline = pline +  "history, horror, mystery, romance, SciFi, short, sport, "
