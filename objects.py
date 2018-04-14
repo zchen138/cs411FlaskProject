@@ -43,10 +43,14 @@ class recommendMovie(object):
     title = ""
     releaseYear = -1
     runtime = -1
-    action = -1
+    rating = -1
+    numRatings = -1
+    numWins = -1
+    numGenres = -1
+    genre = -1
+    actionMovie = -1
     adult = -1
     adventure = -1
-    animation = -1
     biography = -1
     comedy = -1
     crime = -1
@@ -54,29 +58,34 @@ class recommendMovie(object):
     drama = -1
     family = -1
     fantasy = -1
-    filmnoir = -1
+    filmNoir = -1
     history = -1
+    horror = -1
     mystery = -1
-    romantic = -1
-    scifi = -1
+    romance = -1
+    SciFi = -1
     short = -1
     sport = -1
     thriller = -1
     war = -1
     western = -1
-    rating = -1
 
-    def __init__(self, movieid, title, releaseYear, runtime,action, adult, adventure, animation, 
-                biography, comedy, crime, documentary, drama, family, fantasy, filmnoir, history, 
-                mystery, romantic, scifi, short, sport, thriller, war, western, rating):
+    
+    def __init__(self, movieid, title, releaseYear, runtime, rating, numRatings, numWins, numGenres, genre, actionMovie, adult, adventure, animation,
+    biography, comedy, crime, documentary, drama, family, fantasy, filmNoir, history, horror, mystery, romance, SciFi, short, sport, 
+    thriller, war, western):
         self.movieid = movieid
         self.title = title
         self.releaseYear = releaseYear
         self.runtime = runtime
-        self.action = action
+        self.rating = rating
+        self.numRatings = numRatings
+        self.numWins = numWins
+        self.numGenres = numGenres
+        self.genre = genre
+        self.actionMovie = actionMovie
         self.adult = adult
         self.adventure = adventure
-        self.animation = animation
         self.biography = biography
         self.comedy = comedy
         self.crime = crime
@@ -84,17 +93,17 @@ class recommendMovie(object):
         self.drama = drama
         self.family = family
         self.fantasy = fantasy
-        self.filmnoir = filmnoir
+        self.filmNoir = filmNoir
         self.history = history
+        self.horror = horror
         self.mystery = mystery
-        self.romantic = romantic
-        self.scifi = scifi
+        self.romance = romance
+        self.SciFi = SciFi
         self.short = short
         self.sport = sport
         self.thriller = thriller
         self.war = war
         self.western = western
-        self.rating = rating
 
 class GroupedMovie(object):
     genre = ""

@@ -6,7 +6,7 @@ def recommendation(movies, allMovies):
 	topten = []
 
 	if len(movies) <= 10:
-		topten = movies
+		topten = movies.copy()
 	else:
 		topRating = movies[0].rating
 		for cur in movies:
@@ -20,7 +20,35 @@ def recommendation(movies, allMovies):
 			topRating -= 1
 	#topten now had users top ten rated movies
 
-	allScores= []
+
+	d = {}
+	for curMovie in topten:
+		if curMovie.genre not in d:
+			d[curMovie.genre] = curMovie.rating
+		else:
+			d[curMovie.genre] += curMovie.rating
+
+	bestGenre = d.keys()[0]
+	for key in d.keys():
+		if d[key] > d[bestGenre]:
+			bestGenre = key
+	
+	conn = getConnection()
+    cur = conn.cursor()
+
+    sqlStr = "SELECT * FROM moviedata WHERE genre = %s"    
+    cur.execute(sqlStr, [bestGenre])
+
+    maxwins = 0
+    bestMovie = []
+    for movie_info in cur.fetchall():
+    	if maxwins < movie_info.numWins:
+    		maxwins = movie_info.numWins
+    		bestMovie = movie_info
+
+    return bestMovie
+
+	"""allScores= []
 	for t in topten:
 		scores = []
 		for cur in allMovies:
@@ -84,5 +112,5 @@ def recommendation(movies, allMovies):
 			maxi = i
 			maxscore = newScores[i]
 
-	return allMovies[maxi]
+	return allMovies[maxi]"""
 		
