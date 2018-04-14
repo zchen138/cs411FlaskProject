@@ -15,7 +15,7 @@ def recommendation(movies, allMovies):
 
 		while(len(topten) != 10):
 			for cur in movies:
-				if cur.rating = topRating:
+				if cur.rating == topRating:
 					topten.append(cur)
 			topRating -= 1
 	#topten now had users top ten rated movies
