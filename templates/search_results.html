@@ -8,6 +8,14 @@
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <title>123Movies 2: Electric Boogaloo</title>
+
+    <script>
+        function viewMovieInfo(){
+            var curForm = document.getElementById("form1");
+            curForm.action = "/viewMovieInfo"
+            curForm.submit();
+        }
+    </script>
 </head>
 <body>
 
@@ -49,14 +57,19 @@
 
             <div style = "font-size:20px; font-weight:bold; margin-left:25px">
                 {% for rating_form in form2 %}
-                <form action = "/insertRating" method = post>
+                <form action = "/insertRating" id="form1" method = post>
                     {% for subfield in rating_form.rating %}
                         {{ subfield.label }} {{ subfield }}
                     {% endfor %}
                     <input type="hidden" name="movieId" value={{ rating_form.movieId }}>
+                    <input type="hidden" name="category" value={{category}}>
+                    <input type="hidden" name="searchTerm" value={{searchTerm}}>
+
                     {{ rating_form.submit }}
-                    <strong>{{ movies[loop.index0].title}} {{ movies[loop.index0].genre }}
-                        {{ movies[loop.index0].releaseYear }} {{ movies[loop.index0].runtime }}min</strong>
+                    <button onclick="viewMovieInfo()">Movie Info</button>
+
+                   <!-- <strong>{{ movies[loop.index0].title}} {{ movies[loop.index0].genre }}
+                        {{ movies[loop.index0].releaseYear }} {{ movies[loop.index0].runtime }}min</strong> -->
                     <br>
                 </form>
                 {% endfor %}

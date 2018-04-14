@@ -2,6 +2,13 @@ from imdb import IMDb
 
 ia = IMDb()
 
-title = "Badlands "
-movies = ia.search_movie(title)
-print(movies)
+def returnMovieInfo(title):
+    movies = ia.search_movie(title)
+    print(movies)
+    for movie in movies:
+        print(movie['title'])
+        print(movie['year'])
+        print(movie.getID())
+
+
+returnMovieInfo("California Dreamin' (Nesfarsit)")
