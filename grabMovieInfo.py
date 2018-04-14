@@ -2,7 +2,7 @@ from imdb import IMDb
 
 ia = IMDb()
 
-def returnMovieInfo(title):
+def returnMovieInfo(title, year):
     movies = ia.search_movie(title)
     print(movies)
     for movie in movies:
@@ -10,5 +10,3 @@ def returnMovieInfo(title):
         print(movie['year'])
         print(movie.getID())
 
-
-returnMovieInfo("California Dreamin' (Nesfarsit)")

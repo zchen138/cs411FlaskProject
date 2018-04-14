@@ -4,6 +4,7 @@ from flask_wtf import Form
 from wtforms import StringField, SubmitField, SelectField, RadioField, FieldList, FormField, validators
 import objects as obj
 import recommender as reco
+import grabMovieInfo as movieGetter
 import MySQLdb
 
 app = Flask(__name__)
@@ -320,10 +321,10 @@ def viewMovieInfo():
     conn = getConnection()
     cur = conn.cursor()
 
-    sqlStr = "SELECT title FROM moviedata WHERE movieid = %s"
+    sqlStr = "SELECT title, releaseYear FROM moviedata WHERE movieid = %s"
     cur.execute(sqlStr, [movieid])
-    movietitle = cur.fetchone()
-    print(movietitle)
+
+
     return render_template('homepage.html', form=form, username=username)
 
 
