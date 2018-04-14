@@ -3,6 +3,7 @@ from flask import request, redirect, render_template, url_for, session
 from flask_wtf import Form
 from wtforms import StringField, SubmitField, SelectField, RadioField, FieldList, FormField, validators
 import objects as obj
+import recommender as reco
 import MySQLdb
 
 app = Flask(__name__)
@@ -222,12 +223,15 @@ def recommend():
     sqlStr = "SELECT movieId, rating FROM rated WHERE userid = %s"    
     cur.execute(sqlStr, [_userid])
 
+    movieArr = []
+
     for data in cur.fetchall():
         userRating = data[1]
         cur_movie_id = data[0]
         sqlStr = "SELECT * FROM moviedata WHERE movieid = %s"
         cur.execute(sqlStr, [cur_movie_id])
         movieInformation = cur.fetchone()
+        movieArr.append(movieInformation)
         
 
 

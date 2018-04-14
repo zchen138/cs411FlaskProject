@@ -31,6 +31,9 @@ with open("imdbmovies.csv", "r") as csvfile:
             titleStr = unidecode(titleStr)
             titleStr = titleStr.replace("\"", "")
             titleStr = titleStr.replace("<", "")
+            titleStr = titleStr.replace(".", "")
+            titleStr = titleStr.replace("?", "")
+            titleStr = titleStr.replace("$", "")
             pline = pline + "\"" + titleStr + "\" "
             pline = pline +  ", " + items[8] + ", " + convertSecondsToMinutes(items[7]) +  ", " + items[5] + ", " + items[6]
             pline = pline + ", " + items[10] + ", " + items[15] +", " + "\"" + getMainGenre(items) +"\""
