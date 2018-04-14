@@ -34,6 +34,16 @@ with open("imdbmovies.csv", "r") as csvfile:
             titleStr = titleStr.replace(".", "")
             titleStr = titleStr.replace("?", "")
             titleStr = titleStr.replace("$", "")
+            if "AfA" in titleStr:
+                continue
+            if "(Video" in titleStr:
+                position = titleStr.find("(Video")
+                titleStr = titleStr[0:position]
+
+            if "(TV" in titleStr:
+                position = titleStr.find("(TV")
+                titleStr = titleStr[0:position]
+
             pline = pline + "\"" + titleStr + "\" "
             pline = pline +  ", " + items[8] + ", " + convertSecondsToMinutes(items[7]) +  ", " + items[5] + ", " + items[6]
             pline = pline + ", " + items[10] + ", " + items[15] +", " + "\"" + getMainGenre(items) +"\""

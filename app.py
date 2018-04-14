@@ -79,7 +79,7 @@ def search_results():
             rating_form.movieId = movie_info[0]
             rating_forms.append(rating_form)
 
-        return render_template('search_results.html', form1=form1, form2=rating_forms, username=username, movies=movieArr)
+        return render_template('search_results.html', form1=form1, form2=rating_forms, username=username, movies=movieArr, category=category, searchTerm=query)
 
     return render_template('homepage.html', form1=form1, username=username, error="Enter a search term")
 
@@ -307,6 +307,25 @@ def viewUser(userid):
     otherUser = cur.fetchone()[0]
 
     return render_template('view_user.html', movies=movieArr, otherUser=otherUser)
+
+@app.route("/viewMovieInfo", methods=['GET', 'POST'])
+def viewMovieInfo():
+    form = MovieQueryForm()
+    username = session['username']
+
+    movieid = request.form['movieId']
+    query = request.form['searchTerm']
+    category = request.form['category']
+
+    conn = getConnection()
+    cur = conn.cursor()
+
+    sqlStr = "SELECT title FROM moviedata WHERE movieid = %s"
+    cur.execute(sqlStr, [movieid])
+    movietitle = cur.fetchone()
+    print(movietitle)
+    return render_template('homepage.html', form=form, username=username)
+
 
 if __name__ == "__main__":
     app.run(debug=True)
