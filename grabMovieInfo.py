@@ -25,3 +25,4 @@ def returnMovieInfo(title, year):
         #print(movie.getID())
         if (movie['year']==year):
             directors, actors, plot = getMovieInformation(movie.getID())
+            return directors, actors, plot

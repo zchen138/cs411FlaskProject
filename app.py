@@ -232,6 +232,7 @@ def recommend():
     cur.execute(sqlStr, [_userid])
     movie_names = np.array(cur.fetchall())
     print(movie_names)
+    topten = []
 
     if len(movies) <= 10:
         topten = movies
@@ -246,14 +247,15 @@ def recommend():
                 if cur.rating == topRating:
                     topten.append(cur)
             topRating -= 1
-    #topten now had users top ten rated movies
+    #topten now had users top ten rated moviess
+    print(topten[0])
 
     d = {}
     for curMovie in topten:
-        if curMovie[7] not in d:
-            d[curMovie[7]] = curMovie[4]
+        if curMovie[8] not in d:
+            d[curMovie[8]] = curMovie[4]
         else:
-            d[curMovie[7]] += curMovie[4]
+            d[curMovie[8]] += curMovie[4]
 
     bestGenre = 'actionMovie'
     for key in d:
@@ -275,6 +277,7 @@ def recommend():
             maxwins = movie_info[5]
             bestMovie = movie_info
 
+    print("this is the best movie")
     print(bestMovie)
     return render_template('recommend.html', movie=bestMovie)
 
@@ -367,7 +370,7 @@ def viewMovieInfo():
     sqlStr = "SELECT title, releaseYear FROM moviedata WHERE movieid = %s"
     cur.execute(sqlStr, [movieid])
     curMovieObj = cur.fetchone()
-    movieGetter.returnMovieInfo(curMovieObj[0], curMovieObj[1])
+    directors, actors, plot = movieGetter.returnMovieInfo(curMovieObj[0], curMovieObj[1])
 
 
 
