@@ -3,6 +3,7 @@ from flask import request, redirect, render_template, url_for, session
 from flask_wtf import Form
 from wtforms import StringField, SubmitField, SelectField, RadioField, FieldList, FormField, validators
 import objects as obj
+import requestRating as requestRating
 import recommender as reco
 import grabMovieInfo as movieGetter
 import MySQLdb
@@ -26,7 +27,7 @@ def getConnection():
                            user="root",
                            password="pass",
                            db="cs411flaskproject")
-    
+
 class MovieQueryForm(Form):
     query = StringField([validators.DataRequired("Please enter a search term.")])
     category = SelectField('Category', choices=[('title', 'title'), ('genre', 'genre'), ('releaseYear', 'releaseYear')])
@@ -211,10 +212,7 @@ def users():
         users.append(userObj)
 
     return render_template('users.html', users=users)
-'''
-@app.route('/viewUser')
-def viewUser():
-'''
+
 @app.route('/recommend', methods = ['GET', 'POST'])
 def recommend():
     if 'username' not in session:
@@ -224,11 +222,11 @@ def recommend():
     conn = getConnection()
     cur = conn.cursor()
 
-    sqlStr = "SELECT moviedata.* FROM moviedata, rated WHERE userId = %s AND moviedata.movieId = rated.movieId"    
+    sqlStr = "SELECT moviedata.* FROM moviedata, rated WHERE userId = %s AND moviedata.movieId = rated.movieId"
     cur.execute(sqlStr, [_userid])
     movies = cur.fetchall()
 
-    sqlStr = "SELECT moviedata.title FROM moviedata, rated WHERE userId = %s AND moviedata.movieId = rated.movieId"    
+    sqlStr = "SELECT moviedata.title FROM moviedata, rated WHERE userId = %s AND moviedata.movieId = rated.movieId"
     cur.execute(sqlStr, [_userid])
     movie_names = np.array(cur.fetchall())
     #print(movie_names)
@@ -266,7 +264,7 @@ def recommend():
             bestGenre = key
     #print(bestGenre)
 
-    sqlStr = "SELECT moviedata.* FROM moviedata WHERE moviedata.genre = %s"    
+    sqlStr = "SELECT moviedata.* FROM moviedata WHERE moviedata.genre = %s"
     cur.execute(sqlStr, [bestGenre])
 
     maxwins = 0
@@ -280,6 +278,7 @@ def recommend():
     #print("this is the best movie")
     #print(bestMovie)
     return render_template('recommend.html', movie=bestMovie)
+
 
 
 @app.route('/insertRating', methods=['GET', 'POST'])
@@ -358,6 +357,7 @@ def viewUser(userid):
 @app.route("/viewMovieInfo", methods=['GET', 'POST'])
 def viewMovieInfo():
     form = MovieQueryForm()
+    _userid = session['userid']
     username = session['username']
 
     movieid = request.form['movieId']
@@ -372,10 +372,9 @@ def viewMovieInfo():
     curMovieObj = cur.fetchone()
     directors, actors, plot = movieGetter.returnMovieInfo(curMovieObj[0], curMovieObj[1])
 
-
-
-
-    return render_template('movieInformation.html', directors=directors, actors=actors, plot=plot, category=category, query=query)
+    predictedRating = requestRating.requestRating(_userid, movieid, cur)
+    return render_template('movieInformation.html', directors=directors, actors=actors, plot=plot,
+                           category=category, query=query, predictedRating=predictedRating)
 
 if __name__ == "__main__":
     app.run(debug=True)
