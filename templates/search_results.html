@@ -10,9 +10,14 @@
     <title>123Movies 2: Electric Boogaloo</title>
 
     <script>
-        function viewMovieInfo(){
-            var curForm = document.getElementById("form1");
+        function viewMovieInfo(movieId){
+            var curForm = document.getElementById(movieId);
             curForm.action = "/viewMovieInfo"
+            curForm.submit();
+        }
+        function requestRating(movieId){
+            var curForm = document.getElementById(movieId);
+            curForm.action = "/requestRating"
             curForm.submit();
         }
     </script>
@@ -57,19 +62,19 @@
 
             <div style = "font-size:20px; font-weight:bold; margin-left:25px">
                 {% for rating_form in form2 %}
-                <form action = "/insertRating" id="form1" method = post>
+                <form action = "/insertRating" id="{{rating_form.movieId}}" method = post>
                     {% for subfield in rating_form.rating %}
                         {{ subfield.label }} {{ subfield }}
                     {% endfor %}
-                    <input type="hidden" name="movieId" value={{ rating_form.movieId }}>
+                    <input type="hidden" name="movieId" value={{rating_form.movieId}}>
                     <input type="hidden" name="category" value={{category}}>
                     <input type="hidden" name="searchTerm" value={{searchTerm}}>
 
                     {{ rating_form.submit }}
-                    <button onclick="viewMovieInfo()">Movie Info</button>
-
-                   <!-- <strong>{{ movies[loop.index0].title}} {{ movies[loop.index0].genre }}
-                        {{ movies[loop.index0].releaseYear }} {{ movies[loop.index0].runtime }}min</strong> -->
+                    <button onclick=viewMovieInfo("{{rating_form.movieId}}")>Movie Info</button>
+                    <button onclick=requestRating("{{rating_form.movieId}}")>Predict Rating</button>
+                    <strong>{{ movies[loop.index0].title}} {{ movies[loop.index0].genre }}
+                        {{ movies[loop.index0].releaseYear }} {{ movies[loop.index0].runtime }}min</strong>
                     <br>
                 </form>
                 {% endfor %}
