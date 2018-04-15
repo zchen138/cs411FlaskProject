@@ -1,4 +1,47 @@
-import objects as obj
+"""
+import pandas as pd
+import numpy as np
+from scipy.sparse.linalg import svds
+
+_userid = session['userid']
+
+conn = getConnection()
+cur = conn.cursor()
+
+sqlStr = "SELECT movieId, title, year FROM moviedata"    
+cur.execute(sqlStr)
+
+movie_list = cur.fetchall()
+movies_df = pd.DataFrame(movie_list, columns = ['MovieID', 'Title', 'Year'])
+
+conn2 = getConnection()
+cur2 = conn2.cursor()
+
+sqlStr2 = "SELECT userId, movieId, rating FROM rated WHERE userId = %s"    
+cur2.execute(sqlStr2, [_userid])
+
+ratings_list = cur2.fetchall()
+ratings_df = pd.DataFrame(ratings_list, columns = ['UserID', 'MovieID', 'Rating'])
+
+ratings_df = ratings_df.pivot(index = 'UserID', columns ='MovieID', values = 'Rating').fillna(0)
+
+ratings_matrix = ratings.df.as_matrix()
+ratings_mean = np.mean(ratings_matrix, axis=1).reshape(-1,1)
+ratings_normalized = ratings_matrix - ratings_mean
+
+U, S, V = svds(ratings_normalized, k = 50)
+
+S = np.diag(S)
+
+predicted_ratings = np.dot(np.dot(U, S), V) + ratings_mean
+
+predicted_df = pd.DataFrame(predicted_ratings, columns = ratings_df.columns)
+print(predicted_df)
+
+
+"""
+
+"""import objects as obj
 
 def recommendation(movies, allMovies):
 	#movies in an array of movies that the user has rated
@@ -34,21 +77,22 @@ def recommendation(movies, allMovies):
 			bestGenre = key
 	
 	conn = getConnection()
-    cur = conn.cursor()
+	cur = conn.cursor()
 
-    sqlStr = "SELECT * FROM moviedata WHERE genre = %s"    
-    cur.execute(sqlStr, [bestGenre])
+	sqlStr = "SELECT * FROM moviedata WHERE genre = %s"    
+	cur.execute(sqlStr, [bestGenre])
 
-    maxwins = 0
-    bestMovie = []
-    for movie_info in cur.fetchall():
-    	if maxwins < movie_info.numWins:
-    		maxwins = movie_info.numWins
-    		bestMovie = movie_info
+	maxwins = 0
+	bestMovie = []
+	for movie_info in cur.fetchall():
+		if maxwins < movie_info.numWins:
+			maxwins = movie_info.numWins
+			bestMovie = movie_info
 
-    return bestMovie
-
-	"""allScores= []
+	return bestMovie
+"""
+"""
+	allScores= []
 	for t in topten:
 		scores = []
 		for cur in allMovies:

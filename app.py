@@ -6,6 +6,9 @@ import objects as obj
 import recommender as reco
 import grabMovieInfo as movieGetter
 import MySQLdb
+import pandas as pd
+import numpy as np
+from scipy.sparse.linalg import svds
 
 app = Flask(__name__)
 app.debug=True
@@ -221,19 +224,53 @@ def recommend():
     conn = getConnection()
     cur = conn.cursor()
 
-    sqlStr = "SELECT movieId, rating FROM rated WHERE userid = %s"    
+    sqlStr = "SELECT moviedata.* FROM moviedata, rated WHERE userId = %s AND moviedata.movieId = rated.movieId"    
     cur.execute(sqlStr, [_userid])
+    movies = cur.fetchall()
 
-    movieArr = []
+    if len(movies) <= 10:
+        topten = movies
+    else:
+        topRating = movies[0].rating
+        for cur in movies:
+            if cur.rating > topRating:
+                topRating = cur.rating
 
-    for data in cur.fetchall():
-        userRating = data[1]
-        cur_movie_id = data[0]
-        sqlStr = "SELECT * FROM moviedata WHERE movieid = %s"
-        cur.execute(sqlStr, [cur_movie_id])
-        movieInformation = cur.fetchone()
-        movieArr.append(movieInformation)
-        
+        while(len(topten) != 10):
+            for cur in movies:
+                if cur.rating == topRating:
+                    topten.append(cur)
+            topRating -= 1
+    #topten now had users top ten rated movies
+
+    d = {}
+    for curMovie in topten:
+        if curMovie[7] not in d:
+            d[curMovie[7]] = curMovie[4]
+        else:
+            d[curMovie[7]] += curMovie[4]
+
+    bestGenre = 'actionMovie'
+    for key in d:
+        bestGenre = key
+
+    for key in d:
+        if d[key] > d[bestGenre]:
+            bestGenre = key
+    print(bestGenre)
+
+    sqlStr = "SELECT moviedata.* FROM moviedata WHERE moviedata.genre = %s"    
+    cur.execute(sqlStr, [bestGenre])
+
+    maxwins = 0
+    bestMovie = cur.fetchone()
+    for movie_info in cur.fetchall():
+        if maxwins < movie_info[5]:
+            maxwins = movie_info[5]
+            bestMovie = movie_info
+
+    print(bestMovie)
+    return render_template('recommend.html', movie=bestMovie)
 
 
 @app.route('/insertRating', methods=['GET', 'POST'])
