@@ -3,9 +3,9 @@ from flask import request, redirect, render_template, url_for, session
 from flask_wtf import Form
 from wtforms import StringField, SubmitField, SelectField, RadioField, FieldList, FormField, validators
 import objects as obj
+import requestRating as requestRating
 import recommender as reco
 import grabMovieInfo as movieGetter
-import math
 import MySQLdb
 import pandas as pd
 import numpy as np
@@ -357,6 +357,7 @@ def viewUser(userid):
 @app.route("/viewMovieInfo", methods=['GET', 'POST'])
 def viewMovieInfo():
     form = MovieQueryForm()
+    _userid = session['userid']
     username = session['username']
 
     movieid = request.form['movieId']
@@ -371,7 +372,9 @@ def viewMovieInfo():
     curMovieObj = cur.fetchone()
     directors, actors, plot = movieGetter.returnMovieInfo(curMovieObj[0], curMovieObj[1])
 
-    return render_template('movieInformation.html', directors=directors, actors=actors, plot=plot, category=category, query=query)
+    predictedRating = requestRating.requestRating(_userid, movieid, cur)
+    return render_template('movieInformation.html', directors=directors, actors=actors, plot=plot,
+                           category=category, query=query, predictedRating=predictedRating)
 
 if __name__ == "__main__":
     app.run(debug=True)
