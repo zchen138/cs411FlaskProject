@@ -228,6 +228,11 @@ def recommend():
     cur.execute(sqlStr, [_userid])
     movies = cur.fetchall()
 
+    sqlStr = "SELECT moviedata.title FROM moviedata, rated WHERE userId = %s AND moviedata.movieId = rated.movieId"    
+    cur.execute(sqlStr, [_userid])
+    movie_names = np.array(cur.fetchall())
+    print(movie_names)
+
     if len(movies) <= 10:
         topten = movies
     else:
@@ -265,7 +270,8 @@ def recommend():
     maxwins = 0
     bestMovie = cur.fetchone()
     for movie_info in cur.fetchall():
-        if maxwins < movie_info[5]:
+        if maxwins < movie_info[5] and [movie_info[1]] not in movie_names:
+            print([movie_info[1]])
             maxwins = movie_info[5]
             bestMovie = movie_info
 
