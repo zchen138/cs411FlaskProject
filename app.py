@@ -360,6 +360,9 @@ def viewMovieInfo():
 
     sqlStr = "SELECT title, releaseYear FROM moviedata WHERE movieid = %s"
     cur.execute(sqlStr, [movieid])
+    curMovieObj = cur.fetchone()
+    movieGetter.returnMovieInfo(curMovieObj[0], curMovieObj[1])
+
 
 
     return render_template('homepage.html', form=form, username=username)
