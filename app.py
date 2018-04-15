@@ -27,7 +27,7 @@ def getConnection():
                            user="root",
                            password="pass",
                            db="cs411flaskproject")
-    
+
 class MovieQueryForm(Form):
     query = StringField([validators.DataRequired("Please enter a search term.")])
     category = SelectField('Category', choices=[('title', 'title'), ('genre', 'genre'), ('releaseYear', 'releaseYear')])
@@ -222,9 +222,15 @@ def recommend():
     conn = getConnection()
     cur = conn.cursor()
 
-    sqlStr = "SELECT moviedata.* FROM moviedata, rated WHERE userId = %s AND moviedata.movieId = rated.movieId"    
+    sqlStr = "SELECT moviedata.* FROM moviedata, rated WHERE userId = %s AND moviedata.movieId = rated.movieId"
     cur.execute(sqlStr, [_userid])
     movies = cur.fetchall()
+
+    sqlStr = "SELECT moviedata.title FROM moviedata, rated WHERE userId = %s AND moviedata.movieId = rated.movieId"
+    cur.execute(sqlStr, [_userid])
+    movie_names = np.array(cur.fetchall())
+    #print(movie_names)
+    topten = []
 
     if len(movies) <= 10:
         topten = movies
@@ -239,14 +245,15 @@ def recommend():
                 if cur.rating == topRating:
                     topten.append(cur)
             topRating -= 1
-    #topten now had users top ten rated movies
+    #topten now had users top ten rated moviess
+    #print(topten[0])
 
     d = {}
     for curMovie in topten:
-        if curMovie[7] not in d:
-            d[curMovie[7]] = curMovie[4]
+        if curMovie[8] not in d:
+            d[curMovie[8]] = curMovie[4]
         else:
-            d[curMovie[7]] += curMovie[4]
+            d[curMovie[8]] += curMovie[4]
 
     bestGenre = 'actionMovie'
     for key in d:
@@ -255,19 +262,21 @@ def recommend():
     for key in d:
         if d[key] > d[bestGenre]:
             bestGenre = key
-    print(bestGenre)
+    #print(bestGenre)
 
-    sqlStr = "SELECT moviedata.* FROM moviedata WHERE moviedata.genre = %s"    
+    sqlStr = "SELECT moviedata.* FROM moviedata WHERE moviedata.genre = %s"
     cur.execute(sqlStr, [bestGenre])
 
     maxwins = 0
     bestMovie = cur.fetchone()
     for movie_info in cur.fetchall():
-        if maxwins < movie_info[5]:
+        if maxwins < movie_info[5] and [movie_info[1]] not in movie_names:
+            #print([movie_info[1]])
             maxwins = movie_info[5]
             bestMovie = movie_info
 
-    print(bestMovie)
+    #print("this is the best movie")
+    #print(bestMovie)
     return render_template('recommend.html', movie=bestMovie)
 
 
@@ -359,89 +368,10 @@ def viewMovieInfo():
 
     sqlStr = "SELECT title, releaseYear FROM moviedata WHERE movieid = %s"
     cur.execute(sqlStr, [movieid])
-    return render_template('homepage.html', form=form, username=username)
+    curMovieObj = cur.fetchone()
+    directors, actors, plot = movieGetter.returnMovieInfo(curMovieObj[0], curMovieObj[1])
 
-@app.route('/requestRating', methods=['GET', 'POST'])
-def requestRating():
-    if 'username' not in session:
-        return redirect(url_for('homepage'))
-    _userid = session['userid']
-    form = MovieQueryForm()
-    _targetMovie = request.form['movieId']
-
-    conn = getConnection()
-    cur = conn.cursor()
-
-    predictedScore = 0
-    denom = 0
-
-    sqlStr = "SELECT * FROM rated WHERE userid = %s"
-    cur.execute(sqlStr, [_userid])
-    userAvg = 0
-    userCt = 0
-
-    for rating in cur.fetchall():
-        userAvg = userAvg + rating[2]
-        userCt = userCt + 1
-    userAvg = userAvg / userCt  # Determine the user's average rating
-    print(userAvg) #TODO
-    sqlStr = "SELECT * FROM users WHERE userid <> %s"
-    cur.execute(sqlStr, [_userid])
-
-    otherUsers = cur.fetchall()
-    for otherUser in otherUsers:  # Go through each other user in the database
-        _otherid = otherUser[0]
-        otherTargetRating = 0
-
-        sqlStr = "SELECT * FROM rated WHERE userid = %s AND movieid = %s"
-        cur.execute(sqlStr, (_otherid, _targetMovie))
-        if cur.rowcount == 0:
-            continue  # We are only interested in others who have rated this movie
-        else:
-            otherTargetRating = cur.fetchone()[2]
-
-        sqlStr = "SELECT * FROM rated WHERE userid = %s"
-        cur.execute(sqlStr, [_otherid])
-
-        otherAvg = 0
-        otherCt = 0
-        for rating in cur.fetchall():
-            otherAvg = otherAvg + rating[2]
-            otherCt = otherCt + 1
-        otherAvg = otherAvg / otherCt  # Determine the other user's average rating
-
-        sqlStr = "SELECT * FROM rated WHERE userid = %s AND movieid IN (SELECT movieid FROM rated WHERE userid = %s)"
-        cur.execute(sqlStr, (_userid, _otherid))  # Find the movies that both users liked
-        sumProductDifferences = 0
-        sumSquaredDiffUser = 0
-        sumSquaredDiffOther = 0
-
-        for rating in cur.fetchall():
-            sharedMovie = rating[1]
-            userRating = rating[2]
-            otherRating = 0
-
-            sqlStr = "SELECT * FROM rated WHERE userid = %s AND movieid = %s"
-            cur.execute(sqlStr, (_otherid, sharedMovie))
-            otherRating = cur.fetchone()[2]
-
-            sumProductDifferences = diffSquareAdder(sumProductDifferences, userRating, userAvg, otherRating, otherAvg)
-            sumSquaredDiffUser = diffSquareAdder(sumSquaredDiffUser, userRating, userAvg, userRating, userAvg)
-            sumSquaredDiffOther = diffSquareAdder(sumSquaredDiffOther, otherRating, otherAvg, otherRating, otherAvg)
-
-        pearsonCoeff = sumProductDifferences / math.sqrt(sumSquaredDiffUser * sumSquaredDiffOther)
-        if pearsonCoeff != 0:
-            predictedScore = predictedScore + ((otherTargetRating - otherAvg) * pearsonCoeff)
-            denom = denom + pearsonCoeff
-
-    if predictedScore != 0:
-        predictedScore = userAvg + (predictedScore / denom)  # Calculate the total predicted scoree bassed on deviations
-    return str(predictedScore) # TODO Replace me
-
-
-def diffSquareAdder(sumarg, rating1, avg1, rating2, avg2):
-    return sumarg + ((rating1 - avg1) * (rating2 - avg2))
-
+    return render_template('movieInformation.html', directors=directors, actors=actors, plot=plot, category=category, query=query)
 
 if __name__ == "__main__":
     app.run(debug=True)
