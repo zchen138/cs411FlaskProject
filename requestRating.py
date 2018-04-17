@@ -12,6 +12,9 @@ def requestRating(_userid, _targetMovie, cur):
     for rating in cur.fetchall():
         userAvg = userAvg + rating[2]
         userCt = userCt + 1
+
+    if userCt==0:
+        return -1
     userAvg = userAvg / userCt  # Determine the user's average rating
 
     sqlStr = "SELECT * FROM users WHERE userid <> %s"

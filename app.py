@@ -416,6 +416,10 @@ def viewMovieInfo():
     directors, actors, plot = movieGetter.returnMovieInfo(curMovieObj[0], curMovieObj[1])
 
     predictedRating = requestRating.requestRating(_userid, movieid, cur)
+
+    if (predictedRating==-1):
+        predictedRating = "NA"
+
     return render_template('movieInformation.html', directors=directors, actors=actors, plot=plot,
                            category=category, query=query, predictedRating=predictedRating)
 
