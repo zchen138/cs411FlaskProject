@@ -10,6 +10,7 @@ import MySQLdb
 import pandas as pd
 import numpy as np
 from scipy.sparse.linalg import svds
+import movieInfoProcessor as movieInfoProc
 
 app = Flask(__name__)
 app.debug=True
@@ -406,11 +407,12 @@ def viewMovieInfo():
     movieid = request.form['movieId']
     query = request.form['searchTerm']
     category = request.form['category']
+    pagenum = request.form['pagenum']
 
     conn = getConnection()
     cur = conn.cursor()
 
-    sqlStr = "SELECT title, releaseYear FROM moviedata WHERE movieid = %s"
+    sqlStr = "SELECT title, releaseYear, rating, runtime FROM moviedata WHERE movieid = %s"
     cur.execute(sqlStr, [movieid])
     curMovieObj = cur.fetchone()
     directors, actors, plot = movieGetter.returnMovieInfo(curMovieObj[0], curMovieObj[1])
@@ -421,7 +423,8 @@ def viewMovieInfo():
         predictedRating = "NA"
 
     return render_template('movieInformation.html', directors=directors, actors=actors, plot=plot,
-                           category=category, query=query, predictedRating=predictedRating)
+                           category=category, query=query, predictedRating=predictedRating,
+                           pagenum=pagenum, releaseYear=curMovieObj[1], imdbRating=curMovieObj[2], runtime=curMovieObj[3])
 
 if __name__ == "__main__":
     app.run(debug=True)

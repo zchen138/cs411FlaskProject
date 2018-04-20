@@ -71,6 +71,7 @@
                     <input type="hidden" name="movieId" value={{rating_form.movieId}}>
                     <input type="hidden" name="category" value={{category}}>
                     <input type="hidden" name="searchTerm" value={{searchTerm}}>
+                    <input type="hidden" name="pagenum" value={{pagenum}}>
 
                     {{ rating_form.submit }}
                     <button onclick=viewMovieInfo("{{rating_form.movieId}}")>Movie Info</button>
