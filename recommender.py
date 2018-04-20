@@ -1,4 +1,79 @@
 """
+if 'username' not in session:
+        return redirect(url_for('homepage'))
+    _userid = session['userid']
+
+    conn = getConnection()
+    cur = conn.cursor()
+
+    sqlStr = "SELECT moviedata.* FROM moviedata, rated WHERE userId = %s AND moviedata.movieId = rated.movieId"    
+    cur.execute(sqlStr, [_userid])
+    movies = cur.fetchall()
+
+    sqlStr = "SELECT moviedata.title FROM moviedata, rated WHERE userId = %s AND moviedata.movieId = rated.movieId"    
+    cur.execute(sqlStr, [_userid])
+    movie_names = np.array(cur.fetchall())
+    print(movie_names)
+
+    topten = []
+    if len(movies) <= 10:
+        topten = movies
+    else:
+        topRating = movies[0].rating
+        for cur in movies:
+            if cur.rating > topRating:
+                topRating = cur.rating
+
+        while(len(topten) != 10):
+            for cur in movies:
+                if cur.rating == topRating:
+                    topten.append(cur)
+            topRating -= 1
+    #topten now had users top ten rated movies
+    print(topten[0])
+
+    d = {}
+    for curMovie in topten:
+        if curMovie[8] not in d:
+            d[curMovie[8]] = curMovie[4]
+        else:
+            d[curMovie[8]] += curMovie[4]
+
+    bestGenre = 'actionMovie'
+    for key in d:
+        bestGenre = key
+
+    for key in d:
+        if d[key] > d[bestGenre]:
+            bestGenre = key
+    print(bestGenre)
+
+    sqlStr = "SELECT moviedata.* FROM moviedata WHERE moviedata.genre = %s"    
+    cur.execute(sqlStr, [bestGenre])
+
+    moves = cur.fetchall()
+
+    recommendations = []
+    recommendations_names= []
+    for i in range(10):
+        maxwins = 0
+        bestMovie = cur.fetchone()
+        for movie_info in moves:
+            if maxwins < movie_info[5] and ([movie_info[1]] not in movie_names) and (movie_info[1] not in recommendations_names):
+                maxwins = movie_info[5]
+                bestMovie = movie_info
+        recommendations.append(bestMovie)
+        recommendations_names.append(bestMovie[1])
+    print(recommendations)
+
+    return render_template('recommend.html', movies=recommendations)
+
+
+
+
+"""
+
+"""
 import pandas as pd
 import numpy as np
 from scipy.sparse.linalg import svds

@@ -11,6 +11,7 @@ import pandas as pd
 import numpy as np
 from scipy.sparse.linalg import svds
 import movieInfoProcessor as movieInfoProc
+import random
 
 app = Flask(__name__)
 app.debug=True
@@ -394,6 +395,96 @@ def recommend():
 
 
     return render_template('recommend.html', movies=finalrecs[0:10])
+
+
+@app.route('/featuredActionMovies', methods = ['GET', 'POST'])
+def featuredActionMovies():
+    if 'username' not in session:
+        return redirect(url_for('homepage'))
+    _userid = session['userid']
+    conn = getConnection()
+    cur = conn.cursor()
+    sqlStr = "SELECT moviedata.* FROM moviedata, rated WHERE userId = %s AND moviedata.movieId = rated.movieId"    
+    cur.execute(sqlStr, [_userid])
+    movies = cur.fetchall()
+    sqlStr = "SELECT moviedata.title FROM moviedata, rated WHERE userId = %s AND moviedata.movieId = rated.movieId"    
+    cur.execute(sqlStr, [_userid])
+    movie_names = np.array(cur.fetchall())
+    
+    
+
+    sqlStr = "SELECT moviedata.* FROM moviedata"    
+    cur.execute(sqlStr)
+    movies = cur.fetchall()
+
+    topAction = []
+    allAction = []
+    for m in range(len(movies)):
+        if (movies[m][9] == 1):
+            allAction.append(m)    
+
+    if (len(allAction) > 100):    
+        random.shuffle(allAction)
+        allAction = allAction[0:100]
+
+    actionRatings = []
+
+    for i in range(len(allAction)):
+        actionRatings.append(movies[allAction[i]][4])
+
+
+    ranked_indices = np.argsort(actionRatings)[-10:]
+
+    
+    for i in range(len(ranked_indices)):
+        topAction.append(movies[allAction[ranked_indices[i]]])
+
+    return render_template('featuredActionMovies.html', movies=topAction, genre="Action")
+
+
+@app.route('/featuredComedyMovies', methods = ['GET', 'POST'])
+def featuredComedyMovies():
+    if 'username' not in session:
+        return redirect(url_for('homepage'))
+    _userid = session['userid']
+    conn = getConnection()
+    cur = conn.cursor()
+    sqlStr = "SELECT moviedata.* FROM moviedata, rated WHERE userId = %s AND moviedata.movieId = rated.movieId"    
+    cur.execute(sqlStr, [_userid])
+    movies = cur.fetchall()
+    sqlStr = "SELECT moviedata.title FROM moviedata, rated WHERE userId = %s AND moviedata.movieId = rated.movieId"    
+    cur.execute(sqlStr, [_userid])
+    movie_names = np.array(cur.fetchall())
+    
+    
+
+    sqlStr = "SELECT moviedata.* FROM moviedata"    
+    cur.execute(sqlStr)
+    movies = cur.fetchall()
+
+    topAction = []
+    allAction = []
+    for m in range(len(movies)):
+        if (movies[m][14] == 1):
+            allAction.append(m)    
+
+    if (len(allAction) > 100):    
+        random.shuffle(allAction)
+        allAction = allAction[0:100]
+
+    actionRatings = []
+
+    for i in range(len(allAction)):
+        actionRatings.append(movies[allAction[i]][4])
+
+
+    ranked_indices = np.argsort(actionRatings)[-10:]
+
+    
+    for i in range(len(ranked_indices)):
+        topAction.append(movies[allAction[ranked_indices[i]]])
+
+    return render_template('featuredComedyMovies.html', movies=topAction, genre="Comedy")
 
 
 

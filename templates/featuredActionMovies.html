@@ -7,7 +7,7 @@
 
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-    <title>Recommended Movies</title>
+    <title>Featured Action Movies</title>
 
     <script>
         function viewMovieInfo(movieId){
@@ -27,7 +27,7 @@
         }
     </script>
 </head>
-
+<body>
       <!-- <div style="font-size:35px;position:absolute;right:15px;top:5px">
         <img src="banner.png" alt="banner.png">
         <button class="btn">Button</button>
@@ -41,13 +41,13 @@
       </div>
 
       <div style="font-size:35px;position:absolute;left:15px;top:5px">
-    <strong> Movie Recommended for you </strong><br>
+    <strong> Featured {{genre}} Movies </strong><br>
   </div>
 
   <div style = "position:absolute; top:110px; left:0px">
       <div style = "font-size:20px;margin-left:25px">
         {% for movie in movies %}
-              Recommendation {{loop.index0+1}}: 
+              Movie {{loop.index0+1}}: 
               <br>
                Title: <strong>{{ movie[1] }} </strong>
                <br>
