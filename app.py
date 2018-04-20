@@ -487,7 +487,7 @@ def viewMovieInfo():
     sqlStr = "SELECT title, releaseYear, rating, runtime FROM moviedata WHERE movieid = %s"
     cur.execute(sqlStr, [movieid])
     curMovieObj = cur.fetchone()
-    directors, actors, plot = movieGetter.returnMovieInfo(curMovieObj[0], curMovieObj[1])
+    directors, actors, plot, posterUrl = movieGetter.returnMovieInfo(curMovieObj[0], curMovieObj[1])
 
     predictedRating = requestRating.requestRating(_userid, movieid, cur)
 
@@ -496,7 +496,7 @@ def viewMovieInfo():
 
     return render_template('movieInformation.html', directors=directors, actors=actors, plot=plot,
                            category=category, query=query, predictedRating=predictedRating,
-                           pagenum=pagenum, releaseYear=curMovieObj[1], imdbRating=curMovieObj[2], runtime=curMovieObj[3])
+                           pagenum=pagenum, releaseYear=curMovieObj[1], imdbRating=curMovieObj[2], runtime=curMovieObj[3], posterUrl=posterUrl)
 
 if __name__ == "__main__":
     app.run(debug=True)
