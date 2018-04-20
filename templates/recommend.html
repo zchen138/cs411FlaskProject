@@ -16,12 +16,14 @@
 
   <div style = "position:absolute; top:110px; left:0px">
       <div style = "font-size:20px;margin-left:25px">
-              Recommendation 1: 
+        {% for movie in movies %}
+              Recommendation {{loop.index0+1}}: 
               <br>
                Title: <strong>{{ movie[1] }} </strong>
                <br>
                Year: <strong>{{ movie[2] }} </strong> 
-               <br>
+               <br><br>
+        {% endfor %}
                
       </div>
   </div>
