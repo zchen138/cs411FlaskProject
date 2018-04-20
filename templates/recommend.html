@@ -8,6 +8,24 @@
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <title>Recommended Movies</title>
+
+    <script>
+        function viewMovieInfo(movieId){
+            var curForm = document.getElementById(movieId);
+            curForm.action = "/viewMovieInfo";
+            curForm.submit();
+        }
+        function requestRating(movieId){
+            var curForm = document.getElementById(movieId);
+            curForm.action = "/requestRating"
+            curForm.submit();
+        }
+        function nextPage(pagenumber){
+            var curForm = document.getElementById("next_page");
+            curForm.action = "/search_result_page/" + (parseInt(pagenumber)+1)
+            curForm.submit();
+        }
+    </script>
 </head>
 
       <div style="font-size:35px;position:absolute;left:15px;top:5px">
@@ -23,7 +41,18 @@
                <br>
                Year: <strong>{{ movie[2] }} </strong> 
                <br>
-               <button onclick=viewMovieInfo("{{rating_form.movieId}}")>Movie Info</button>
+               <form action = "/insertRating" id="{{movie[0]}}" method = post>
+                  
+                    <input type="hidden" name="movieId" value={{movie[0]}}>
+                    <input type="hidden" name="category" value={{category}}>
+                    <input type="hidden" name="searchTerm" value={{searchTerm}}>
+                    <input type="hidden" name="pagenum" value={{pagenum}}>
+
+                  
+                    <button onclick=viewMovieInfo("{{movie[0]}}")>Movie Info</button>
+                    
+                    <br>
+                </form>
                <br><br>
         {% endfor %}
                
