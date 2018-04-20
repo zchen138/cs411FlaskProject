@@ -3,6 +3,7 @@ from flask import request, redirect, render_template, url_for, session
 from flask_wtf import Form
 from wtforms import StringField, SubmitField, SelectField, RadioField, FieldList, FormField, validators
 import objects as obj
+import requestRating as requestRating
 import recommender as reco
 import grabMovieInfo as movieGetter
 import MySQLdb
@@ -26,7 +27,7 @@ def getConnection():
                            user="root",
                            password="pass",
                            db="cs411flaskproject")
-    
+
 class MovieQueryForm(Form):
     query = StringField([validators.DataRequired("Please enter a search term.")])
     category = SelectField('Category', choices=[('title', 'title'), ('genre', 'genre'), ('releaseYear', 'releaseYear')])
@@ -67,6 +68,8 @@ def search_results():
     category = request.form['category']
     query = request.form['query']
 
+    pagenum = 0
+
     # If a search was made on re-rendering, perform query & display
     if query and category:
         conn = getConnection()
@@ -83,10 +86,42 @@ def search_results():
             rating_form.movieId = movie_info[0]
             rating_forms.append(rating_form)
 
-        return render_template('search_results.html', form1=form1, form2=rating_forms, username=username, movies=movieArr, category=category, searchTerm=query)
+        return render_template('search_results.html', form1=form1, form2=rating_forms, username=username,
+                               movies=movieArr, category=category, searchTerm=query, pagenum=pagenum)
 
-    return render_template('homepage.html', form1=form1, username=username, error="Enter a search term")
+    return render_template('homepage.html', form=form1, username=username, error="Enter a search term")
 
+@app.route('/search_result_page/<pagenum>',  methods=['GET', 'POST'])
+def search_result_page(pagenum):
+
+    if 'username' not in session:
+        return redirect(url_for('homepage'))
+    form1 = MovieQueryForm()
+    username = session['username']
+
+    category = request.form['category']
+    query = request.form['searchTerm']
+
+    if query and category:
+        conn = getConnection()
+        cur = conn.cursor()
+        sqlStr = "SELECT * FROM moviedata WHERE " + str(category) + " = %s LIMIT 10 OFFSET %s"
+        offset = int(pagenum)*10
+        cur.execute(sqlStr, (query, offset))
+
+        movieArr = []
+        rating_forms = []
+        for movie_info in cur.fetchall():
+            cur_movie_obj = obj.createMovie(movie_info[0], movie_info[1], movie_info[2], movie_info[3], movie_info[8])
+            movieArr.append(cur_movie_obj)
+            rating_form = RatingForm()
+            rating_form.movieId = movie_info[0]
+            rating_forms.append(rating_form)
+
+        return render_template('searchResultPage.html', form1=form1, form2=rating_forms, username=username,
+                               movies=movieArr, category=category, searchTerm=query, pagenum=pagenum)
+
+    return render_template('homepage.html', form=form1, username=username)
 @app.route('/')
 def index():
     if 'username' in session:
@@ -126,6 +161,15 @@ def logout():
     session.pop('username', None)
     session.pop('userid', None)
     return redirect(url_for('index'))
+
+@app.route('/searchMovie')
+def searchMovie():
+    if 'username' not in session:
+        return redirect(url_for('homepage'))
+    form1 = MovieQueryForm()
+    username = session['username']
+
+    return render_template('searchMovies.html', form=form1, username=username)
 
 @app.route('/register')
 def register():
@@ -211,10 +255,7 @@ def users():
         users.append(userObj)
 
     return render_template('users.html', users=users)
-'''
-@app.route('/viewUser')
-def viewUser():
-'''
+
 @app.route('/recommend', methods = ['GET', 'POST'])
 def recommend():
     if 'username' not in session:
@@ -224,14 +265,15 @@ def recommend():
     conn = getConnection()
     cur = conn.cursor()
 
-    sqlStr = "SELECT moviedata.* FROM moviedata, rated WHERE userId = %s AND moviedata.movieId = rated.movieId"    
+    sqlStr = "SELECT moviedata.* FROM moviedata, rated WHERE userId = %s AND moviedata.movieId = rated.movieId"
     cur.execute(sqlStr, [_userid])
     movies = cur.fetchall()
 
-    sqlStr = "SELECT moviedata.title FROM moviedata, rated WHERE userId = %s AND moviedata.movieId = rated.movieId"    
+    sqlStr = "SELECT moviedata.title FROM moviedata, rated WHERE userId = %s AND moviedata.movieId = rated.movieId"
     cur.execute(sqlStr, [_userid])
     movie_names = np.array(cur.fetchall())
-    print(movie_names)
+    #print(movie_names)
+    topten = []
 
     if len(movies) <= 10:
         topten = movies
@@ -246,14 +288,15 @@ def recommend():
                 if cur.rating == topRating:
                     topten.append(cur)
             topRating -= 1
-    #topten now had users top ten rated movies
+    #topten now had users top ten rated moviess
+    #print(topten[0])
 
     d = {}
     for curMovie in topten:
-        if curMovie[7] not in d:
-            d[curMovie[7]] = curMovie[4]
+        if curMovie[8] not in d:
+            d[curMovie[8]] = curMovie[4]
         else:
-            d[curMovie[7]] += curMovie[4]
+            d[curMovie[8]] += curMovie[4]
 
     bestGenre = 'actionMovie'
     for key in d:
@@ -262,21 +305,23 @@ def recommend():
     for key in d:
         if d[key] > d[bestGenre]:
             bestGenre = key
-    print(bestGenre)
+    #print(bestGenre)
 
-    sqlStr = "SELECT moviedata.* FROM moviedata WHERE moviedata.genre = %s"    
+    sqlStr = "SELECT moviedata.* FROM moviedata WHERE moviedata.genre = %s"
     cur.execute(sqlStr, [bestGenre])
 
     maxwins = 0
     bestMovie = cur.fetchone()
     for movie_info in cur.fetchall():
         if maxwins < movie_info[5] and [movie_info[1]] not in movie_names:
-            print([movie_info[1]])
+            #print([movie_info[1]])
             maxwins = movie_info[5]
             bestMovie = movie_info
 
-    print(bestMovie)
+    #print("this is the best movie")
+    #print(bestMovie)
     return render_template('recommend.html', movie=bestMovie)
+
 
 
 @app.route('/insertRating', methods=['GET', 'POST'])
@@ -355,6 +400,7 @@ def viewUser(userid):
 @app.route("/viewMovieInfo", methods=['GET', 'POST'])
 def viewMovieInfo():
     form = MovieQueryForm()
+    _userid = session['userid']
     username = session['username']
 
     movieid = request.form['movieId']
@@ -366,10 +412,16 @@ def viewMovieInfo():
 
     sqlStr = "SELECT title, releaseYear FROM moviedata WHERE movieid = %s"
     cur.execute(sqlStr, [movieid])
+    curMovieObj = cur.fetchone()
+    directors, actors, plot = movieGetter.returnMovieInfo(curMovieObj[0], curMovieObj[1])
 
+    predictedRating = requestRating.requestRating(_userid, movieid, cur)
 
-    return render_template('homepage.html', form=form, username=username)
+    if (predictedRating==-1):
+        predictedRating = "NA"
 
+    return render_template('movieInformation.html', directors=directors, actors=actors, plot=plot,
+                           category=category, query=query, predictedRating=predictedRating)
 
 if __name__ == "__main__":
     app.run(debug=True)

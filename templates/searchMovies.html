@@ -7,7 +7,8 @@
 
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-    <title>123Movies 2: Electric Boogaloo</title>
+    <title>first search result</title>
+
 </head>
 <body>
 
@@ -18,13 +19,11 @@
 
     <div style = "float:left; margin:10px; border-style:solid; border-width:1px; padding:10px">
         <b>Welcome to 123 Movies 2: Electric Boogaloo</b><br>
-            Logged in as {{ username }}.  <a href = '/profile'>View your profile</a>
+            Logged in as {{ username }}. <a href = '/profile'>View your profile</a>
         <br><b><a href = '/logout'>Logout</a></b>
     </div>
 
-    <!--
-
-    <div style = "float:right; border-style:solid; border-width:1px; margin:10px; padding:5px">
+  <div style = "float:right; border-style:solid; border-width:1px; margin:10px; padding:5px">
         <form action = "/first_search_results" method = post>
              <fieldset>
                 <legend style= "text-align:left">Search 123Movies 2: Electric Boogaloo</legend>
@@ -41,18 +40,7 @@
         </form>
     </div>
 
-    -->
-
-  <div style = "float:right; border-style:solid; border-width:1px; margin:10px; padding:5px">
-        <a href="/searchMovie">Search Movie</a>
-    </div>
-
-    <div style = "float:right; border-style:solid; border-width:1px; margin:10px; padding:5px">
-        <a href="/users">View all users</a>
-    </div>
-    <div style = "float:right; border-style:solid; border-width:1px; margin:10px; padding:5px">
-        <a href="/recommend">Recommendation</a>
-    </div>
+    <!-- TODO Display dynamic generation of results -->
 
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->

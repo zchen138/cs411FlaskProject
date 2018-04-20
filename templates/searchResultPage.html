@@ -16,6 +16,24 @@
             color: white;
         }
 
+        .prev {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        #container {
+          height: 100%;
+          width: 100%;
+          display: flex;
+        }
+
+
+        #left{
+            width: 110px;
+        }
+        #right{
+            width: 100px;
+        }
 
     </style>
 
@@ -33,6 +51,21 @@
         function nextPage(pagenumber){
             var curForm = document.getElementById("next_page");
             curForm.action = "/search_result_page/" + (parseInt(pagenumber)+1)
+            curForm.submit();
+        }
+
+        function prevPage(pagenumber){
+            var curForm = document.getElementById("prev_page");
+
+            var page = parseInt(pagenumber)-1
+            if (page==0){
+                curForm.action = "/first_search_results";
+                var curInput = document.getElementById("prevEdgeCase");
+                curInput.setAttribute("name", "query")
+            }
+            else{
+                curForm.action = "/search_result_page/" + page
+            }
             curForm.submit();
         }
     </script>
@@ -80,15 +113,27 @@
                     <br>
                 </form>
                 {% endfor %}
-                {% if form2|length == 10 %}
-                <form id="next_page" method=post>
-                    <input type="hidden" name="category" value={{category}}>
-                    <input type="hidden" name="searchTerm" value={{searchTerm}}>
-                    <input type="hidden" name="pagenum" value={{pagenum}}>
-                    <button class="next" onclick=nextPage("{{pagenum}}")>Next &raquo;</button>
-                </form>
-                {% endif %}
+                <div id="container">
+                    <div id="left">
+                        <form id="prev_page" method=post>
+                            <input type="hidden" name="category" value={{category}}>
+                            <input type="hidden" id="prevEdgeCase" name="searchTerm" value={{searchTerm}}>
+                            <input type="hidden" name="pagenum" value={{pagenum}}>
+                            <button class="prev" onclick=prevPage("{{pagenum}}")>&laquo; Previous</button>
+                        </form>
+                    </div>
+                    <div id="right">
+                        <form id="next_page" method=post>
+                            <input type="hidden" name="category" value={{category}}>
+                            <input type="hidden" name="searchTerm" value={{searchTerm}}>
+                            <input type="hidden" name="pagenum" value={{pagenum}}>
+                            <button class="next" onclick=nextPage("{{pagenum}}")>Next &raquo;</button>
+                        </form>
+                    </div>
+                </div>
+
             </div>
+
 
             </fieldset>
     </div>
