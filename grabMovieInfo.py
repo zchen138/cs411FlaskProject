@@ -24,7 +24,12 @@ def getMovieInformation(imbdId):
 
     url = curMovie['cover url']
 
-    return directorArr, actorsArr, plot, url
+    returnPlot = plot[0]
+    charPosition = returnPlot.find("::")
+    print(charPosition)
+    if (charPosition!=-1):
+        returnPlot = returnPlot[0:charPosition]
+    return directorArr, actorsArr, returnPlot, url
 
 def returnMovieInfo(title, year):
     movies = ia.search_movie(title)
