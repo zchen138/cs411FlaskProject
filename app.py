@@ -265,16 +265,16 @@ def recommend():
     conn = getConnection()
     cur = conn.cursor()
 
-    sqlStr = "SELECT moviedata.* FROM moviedata, rated WHERE userId = %s AND moviedata.movieId = rated.movieId"
+    sqlStr = "SELECT moviedata.* FROM moviedata, rated WHERE userId = %s AND moviedata.movieId = rated.movieId"    
     cur.execute(sqlStr, [_userid])
     movies = cur.fetchall()
 
-    sqlStr = "SELECT moviedata.title FROM moviedata, rated WHERE userId = %s AND moviedata.movieId = rated.movieId"
+    sqlStr = "SELECT moviedata.title FROM moviedata, rated WHERE userId = %s AND moviedata.movieId = rated.movieId"    
     cur.execute(sqlStr, [_userid])
     movie_names = np.array(cur.fetchall())
     #print(movie_names)
-    topten = []
 
+    topten = []
     if len(movies) <= 10:
         topten = movies
     else:
@@ -288,7 +288,7 @@ def recommend():
                 if cur.rating == topRating:
                     topten.append(cur)
             topRating -= 1
-    #topten now had users top ten rated moviess
+    #topten now had users top ten rated movies
     #print(topten[0])
 
     d = {}
@@ -307,20 +307,92 @@ def recommend():
             bestGenre = key
     #print(bestGenre)
 
-    sqlStr = "SELECT moviedata.* FROM moviedata WHERE moviedata.genre = %s"
+    sqlStr = "SELECT moviedata.* FROM moviedata WHERE moviedata.genre = %s"    
     cur.execute(sqlStr, [bestGenre])
 
-    maxwins = 0
-    bestMovie = cur.fetchone()
-    for movie_info in cur.fetchall():
-        if maxwins < movie_info[5] and [movie_info[1]] not in movie_names:
-            #print([movie_info[1]])
-            maxwins = movie_info[5]
-            bestMovie = movie_info
+    moves = cur.fetchall()
 
-    #print("this is the best movie")
-    #print(bestMovie)
-    return render_template('recommend.html', movie=bestMovie)
+    recommendations = []
+    recommendations_names= []
+    for i in range(90):
+        maxwins = 0
+        bestMovie = cur.fetchone()
+        for movie_info in moves:
+            if maxwins < movie_info[5] and ([movie_info[1]] not in movie_names) and (movie_info[1] not in recommendations_names):
+                maxwins = movie_info[5]
+                bestMovie = movie_info
+        recommendations.append(bestMovie)
+        recommendations_names.append(bestMovie[1])
+    #print(recommendations)
+
+    
+    if 'username' not in session:
+        return redirect(url_for('homepage'))
+    _userid = session['userid']
+    conn = getConnection()
+    cur = conn.cursor()
+    sqlStr = "SELECT moviedata.* FROM moviedata, rated WHERE userId = %s AND moviedata.movieId = rated.movieId"    
+    cur.execute(sqlStr, [_userid])
+    movies = cur.fetchall()
+    sqlStr = "SELECT moviedata.title FROM moviedata, rated WHERE userId = %s AND moviedata.movieId = rated.movieId"    
+    cur.execute(sqlStr, [_userid])
+    movie_names = np.array(cur.fetchall())
+    
+    topten = []
+    if len(movies) <= 10:
+        topten = movies
+    else:
+        topRating = movies[0].rating
+        for cur in movies:
+            if cur.rating > topRating:
+                topRating = cur.rating
+        while(len(topten) != 10):
+            for cur in movies:
+                if cur.rating == topRating:
+                    topten.append(cur)
+            topRating -= 1
+    user_vector = np.zeros(22 ,dtype = float)
+    
+    for movie in topten:
+        for i in range(22):
+            user_vector[i] += int(movie[i+9])
+    user_vector /= float(len(topten))
+
+    sqlStr = "SELECT moviedata.* FROM moviedata"    
+    cur.execute(sqlStr)
+    movies = cur.fetchall()
+    similarity_rating = np.zeros(len(movies), dtype=float)
+    for m in range(len(movies)):
+        cur_movie_vector = np.zeros(22, dtype=float)
+        for i in range(22):
+            cur_movie_vector[i] += int(movies[m][i+9])
+        similarity_rating[m] = np.dot(user_vector, cur_movie_vector)
+     
+    movie_indices = np.argsort(similarity_rating)[-100:]
+    movie_ratings = np.zeros(100, dtype=float)
+    
+    for i in range(len(movie_indices)):
+        movie_ratings[i] = float(movies[movie_indices[i]][4])
+    ranked_indices = np.argsort(movie_ratings)[0:]
+    recommendations2 = []
+    
+    for i in range(len(ranked_indices)):
+        recommendations2.append(movies[movie_indices[ranked_indices[i]]])
+
+    finalrecs = []
+    count = 0
+    for rec in recommendations:
+        if rec in recommendations2:
+            finalrecs.append(rec)
+    print(len(finalrecs))
+    while len(finalrecs) < 10:
+        for rec in recommendations:
+            if rec not in finalrecs:
+                finalrecs.append(rec)
+        
+
+
+    return render_template('recommend.html', movies=finalrecs[0:10])
 
 
 
