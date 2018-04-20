@@ -20,6 +20,7 @@ def getMovieInformation(imbdId):
 def returnMovieInfo(title, year):
     movies = ia.search_movie(title)
     for movie in movies:
-        if (movie['year']==year):
+        keys = movie.keys()
+        if ('year' in keys and movie['year']==year):
             directors, actors, plot = getMovieInformation(movie.getID())
             return directors, actors, plot
