@@ -60,7 +60,9 @@ def requestRating(_userid, _targetMovie, cur):
             sumProductDifferences = diffSquareAdder(sumProductDifferences, userRating, userAvg, otherRating, otherAvg)
             sumSquaredDiffUser = diffSquareAdder(sumSquaredDiffUser, userRating, userAvg, userRating, userAvg)
             sumSquaredDiffOther = diffSquareAdder(sumSquaredDiffOther, otherRating, otherAvg, otherRating, otherAvg)
-
+            
+        if math.sqrt(sumSquaredDiffUser * sumSquaredDiffOther) == 0:
+            return -1
         pearsonCoeff = sumProductDifferences / math.sqrt(sumSquaredDiffUser * sumSquaredDiffOther)
         if pearsonCoeff != 0:
             predictedScore = predictedScore + ((otherTargetRating - otherAvg) * pearsonCoeff)

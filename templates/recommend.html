@@ -22,6 +22,8 @@
                Title: <strong>{{ movie[1] }} </strong>
                <br>
                Year: <strong>{{ movie[2] }} </strong> 
+               <br>
+               <button onclick=viewMovieInfo("{{rating_form.movieId}}")>Movie Info</button>
                <br><br>
         {% endfor %}
                

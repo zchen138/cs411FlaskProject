@@ -494,9 +494,9 @@ def viewMovieInfo():
     if (predictedRating==-1):
         predictedRating = "NA"
 
-    return render_template('movieInformation.html', directors=directors, actors=actors, plot=plot,
+    return render_template('movieInformation.html', directors=directors, actors=actors[:5], plot=plot,
                            category=category, query=query, predictedRating=predictedRating,
-                           pagenum=pagenum, releaseYear=curMovieObj[1], imdbRating=curMovieObj[2], runtime=curMovieObj[3], posterUrl=posterUrl)
+                           pagenum=pagenum, releaseYear=curMovieObj[1], imdbRating=curMovieObj[2], runtime=curMovieObj[3], posterUrl=posterUrl,  movieTitle=curMovieObj[0])
 
 if __name__ == "__main__":
     app.run(debug=True)

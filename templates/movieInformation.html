@@ -9,21 +9,39 @@
     <p class=error><strong>Error:</strong> {{ error }}
   {% endif %}
 
-
+<!-- directors=directors, actors=actors, plot=plot,
+category=category, query=query, predictedRating=predictedRating,
+pagenum=pagenum, releaseYear=curMovieObj[1], imdbRating=curMovieObj[2], runtime=curMovieObj[3], movie = curMovieObj)
+-->
 
     <div style = "position:absolute; top:90px; left:0px">
             <div style = "font-size:20px; font-weight:bold; margin-left:25px">
+                <h1>{{ movieTitle }} ({{releaseYear}})</h1>
+            </div>
+
+            <div style = "font-size:15px; font-weight:bold; margin-left:25px">
                 <h1>Predicted Rating</h1>
                     {{ predictedRating }} / 5
+
+                <h1>IMDB Rating</h1>
+                    {{ imdbRating/2 }} / 5
+
+                <h1>Runtime</h1>
+                    {{ runtime }} minutes
+
                 <h1>Directors</h1>
                 {% for director in directors %}
                     {{director}}
+                    <br>
                 {% endfor %}
-                <h1>actors</h1>
+
+                <h1>Actors</h1>
                 {% for actor in actors %}
                     {{actor}}
+                    <br>
                 {% endfor %}
-                <h1>plot</h1>
+                
+                <h1>Plot</h1>
                 {{plot}}
 
                  <img src={{posterUrl}} alt="Girl in a jacket">
