@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+<body background="http://blog.visme.co/wp-content/uploads/2017/07/50-Beautiful-and-Minimalist-Presentation-Backgrounds-026.jpg">
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
@@ -26,33 +27,46 @@ pagenum=pagenum, releaseYear=curMovieObj[1], imdbRating=curMovieObj[2], runtime=
                 <h1>{{ movieTitle }} ({{releaseYear}})</h1>
                 <img src={{posterUrl}} alt="Girl in a jacket">
             </div>
+    </div>
 
+    <div style = "font-size:15px; font-weight:bold; position:absolute; top:275px; left:25px">
+        <h1>Predicted Rating</h1>
+        <div style = "font-size:20px; font-weight:bold">
+            {{ predictedRating }} / 5
+        </div>
+    </div>
 
-            <div style = "font-size:15px; font-weight:bold; margin-left:25px">
-                <h1>Predicted Rating</h1>
-                    {{ predictedRating }} / 5
+    <div style = "font-size:15px; font-weight:bold; position:absolute; top:275px; left:300px">
+        <h1>IMDB Rating</h1>
+        <div style = "font-size:20px; font-weight:bold">
+            {{ imdbRating/2 }} / 5
+        </div>
+    </div>
 
-                <h1>IMDB Rating</h1>
-                    {{ imdbRating/2 }} / 5
+    <div style = "font-size:15px; font-weight:bold; position:absolute; top:375px; left:25px">
+        <h1>Runtime</h1>
+            {{ runtime }} minutes
+    </div>
 
-                <h1>Runtime</h1>
-                    {{ runtime }} minutes
+    <div style = "font-size:15px; font-weight:bold; position:absolute; top:375px; left:300px">
+        <h1>Directors</h1>
+        {% for director in directors %}
+            {{director}}
+            <br>
+        {% endfor %}
+    </div>
 
-                <h1>Directors</h1>
-                {% for director in directors %}
-                    {{director}}
-                    <br>
-                {% endfor %}
+    <div style = "font-size:15px; font-weight:bold; position:absolute; top:475px; left:25px">
+        <h1>Actors</h1>
+        {% for actor in actors %}
+            {{actor}}
+            <br>
+        {% endfor %}
+    </div>
 
-                <h1>Actors</h1>
-                {% for actor in actors %}
-                    {{actor}}
-                    <br>
-                {% endfor %}
-                
-                <h1>Plot</h1>
-                {{plot}}
-            </div>
+    <div style = "font-size:15px; font-weight:bold; position:absolute; top:475px; left:300px; max-width:600px">
+        <h1>Plot</h1>
+        {{plot}}
     </div>
 
     <!-- TODO Display dynamic generation of results -->
