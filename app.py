@@ -319,10 +319,14 @@ def recommend():
     for i in range(90):
         maxwins = 0
         bestMovie = cur.fetchone()
+        #if (bestMovie == None):
+        #    break
         for movie_info in moves:
             if maxwins < movie_info[5] and ([movie_info[1]] not in movie_names) and (movie_info[1] not in recommendations_names):
                 maxwins = movie_info[5]
                 bestMovie = movie_info
+        if( bestMovie == None):
+            break
         recommendations.append(bestMovie)
         recommendations_names.append(bestMovie[1])
     #print(recommendations)
@@ -387,7 +391,7 @@ def recommend():
         if rec in recommendations2:
             finalrecs.append(rec)
     print(len(finalrecs))
-    while len(finalrecs) < 10:
+    while len(finalrecs) < 10 and len(finalrecs) != len(recommendations):
         for rec in recommendations:
             if rec not in finalrecs:
                 finalrecs.append(rec)
