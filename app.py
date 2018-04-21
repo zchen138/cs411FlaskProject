@@ -29,6 +29,7 @@ def getConnection():
                            user="root",
                            password="pass",
                            db="cs411flaskproject")
+        
     '''
 class MovieQueryForm(Form):
     query = StringField([validators.DataRequired("Please enter a search term.")])
