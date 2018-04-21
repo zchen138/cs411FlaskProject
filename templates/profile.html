@@ -8,6 +8,7 @@
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <title>Profile</title>
+
 </head>
 <body>
 
@@ -33,7 +34,7 @@
           <fieldset>
           <div style = "font-size:20px;margin-left:25px">
               {% for rating_form in form2 %}
-              <form action = "/updateRating" method = post>
+              <form action = "/updateRating" method=post>
                   <strong>Rating: {{ movieList[loop.index0].rating }}</strong> |
                   {% for subfield in rating_form.rating %}
                       {{ subfield.label }} {{ subfield }}
@@ -41,10 +42,19 @@
                   <input type="hidden" name="movieId" id={{ rating_form.movieId }} value={{ rating_form.movieId }}>
                   <input type="submit" name="update" value="Update">
                   <input type="submit" name="remove" value="Remove">
-                  {{ movieList[loop.index0].title}} {{ movieList[loop.index0].genre }}
-                      {{ movieList[loop.index0].releaseYear }} {{ movieList[loop.index0].runtime }} min
+                  <strong>{{ movieList[loop.index0].title}} </strong>
+                  <!--{{ movieList[loop.index0].title}} {{ movieList[loop.index0].genre }}
+                      {{ movieList[loop.index0].releaseYear }} {{ movieList[loop.index0].runtime }} min -->
                   <br>
               </form>
+              <form action = "/viewMovieInfo" method = post>
+                    <input type="hidden" name="movieId" value={{rating_form.movieId}}>
+                    <input type="hidden" name="category" value="comedy">
+                    <input type="hidden" name="searchTerm" value="blah">
+                    <input type="hidden" name="pagenum" value=4>
+                    <button type="submit">Movie Info</button>
+                    <br>
+                </form>
               {% endfor %}
           </div>
           </fieldset>
