@@ -97,7 +97,6 @@
 
             <div style = "font-size:20px; font-weight:bold; margin-left:25px">
                 {% for rating_form in form2 %}
-                <h>hi how are you</h>
                 <form action = "/insertRating" id="{{rating_form.movieId}}" method = post>
                     {% for subfield in rating_form.rating %}
                         {{ subfield.label }} {{ subfield }}
