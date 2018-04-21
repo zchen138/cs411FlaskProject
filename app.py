@@ -386,6 +386,7 @@ def recommend():
         if rec in recommendations2:
             finalrecs.append(rec)
     print(len(finalrecs))
+
     while len(finalrecs) < 10:
         for rec in recommendations:
             if rec not in finalrecs:
