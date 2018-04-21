@@ -1,5 +1,6 @@
 import math
 
+
 def requestRating(_userid, _targetMovie, cur):
     predictedScore = 0
     denom = 0
@@ -13,7 +14,7 @@ def requestRating(_userid, _targetMovie, cur):
         userAvg = userAvg + rating[2]
         userCt = userCt + 1
 
-    if userCt==0:
+    if userCt == 0:
         return -1
     userAvg = userAvg / userCt  # Determine the user's average rating
 
@@ -60,7 +61,7 @@ def requestRating(_userid, _targetMovie, cur):
             sumProductDifferences = diffSquareAdder(sumProductDifferences, userRating, userAvg, otherRating, otherAvg)
             sumSquaredDiffUser = diffSquareAdder(sumSquaredDiffUser, userRating, userAvg, userRating, userAvg)
             sumSquaredDiffOther = diffSquareAdder(sumSquaredDiffOther, otherRating, otherAvg, otherRating, otherAvg)
-            
+
         if math.sqrt(sumSquaredDiffUser * sumSquaredDiffOther) == 0:
             return -1
         pearsonCoeff = sumProductDifferences / math.sqrt(sumSquaredDiffUser * sumSquaredDiffOther)
@@ -79,6 +80,7 @@ def requestRating(_userid, _targetMovie, cur):
 def diffSquareAdder(sumarg, rating1, avg1, rating2, avg2):
     return sumarg + ((rating1 - avg1) * (rating2 - avg2))
 
+
 def truncate(f, n):
     '''Truncates/pads a float f to n decimal places without rounding'''
     '''Source: https://stackoverflow.com/questions/783897/truncating-floats-in-python'''
@@ -86,4 +88,4 @@ def truncate(f, n):
     if 'e' in s or 'E' in s:
         return '{0:.{1}f}'.format(f, n)
     i, p, d = s.partition('.')
-    return '.'.join([i, (d+'0'*n)[:n]])
+    return '.'.join([i, (d + '0' * n)[:n]])
