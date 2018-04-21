@@ -116,17 +116,19 @@
                 <div id="container">
                     <div id="left">
                         <form id="prev_page" method=post>
+                            <input type="hidden" name="movieId" value={{rating_form.movieId}}>
                             <input type="hidden" name="category" value={{category}}>
-                            <input type="hidden" id="prevEdgeCase" name="searchTerm" value={{searchTerm}}>
                             <input type="hidden" name="pagenum" value={{pagenum}}>
+                            <input type="hidden" id="prevEdgeCase" name="searchTerm" value={{searchTerm}}>
                             <button class="prev" onclick=prevPage("{{pagenum}}")>&laquo; Previous</button>
                         </form>
                     </div>
                     <div id="right">
                         <form id="next_page" method=post>
+                            <input type="hidden" name="movieId" value={{rating_form.movieId}}>
                             <input type="hidden" name="category" value={{category}}>
-                            <input type="hidden" name="searchTerm" value={{searchTerm}}>
                             <input type="hidden" name="pagenum" value={{pagenum}}>
+                            <input type="hidden" id="prevEdgeCase" name="searchTerm" value={{searchTerm}}>
                             <button class="next" onclick=nextPage("{{pagenum}}")>Next &raquo;</button>
                         </form>
                     </div>
