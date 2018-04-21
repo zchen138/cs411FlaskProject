@@ -62,11 +62,12 @@ class ChangeRatingForm(Form):
 
 @app.route('/first_search_results', methods=['GET', 'POST'])
 def search_results():
+    print("hi how are you doing")
     if 'username' not in session:
         return redirect(url_for('homepage'))
     form1 = MovieQueryForm()
     username = session['username']
-
+    print("hi we are here")
     category = request.form['category']
     query = request.form['query']
 
@@ -82,12 +83,13 @@ def search_results():
         movieArr = []
         rating_forms = []
         for movie_info in cur.fetchall():
+            print(movie_info[0])
             cur_movie_obj = obj.createMovie(movie_info[0], movie_info[1], movie_info[2], movie_info[3], movie_info[8])
             movieArr.append(cur_movie_obj)
             rating_form = RatingForm()
             rating_form.movieId = movie_info[0]
             rating_forms.append(rating_form)
-
+        print("did we get here")
         return render_template('search_results.html', form1=form1, form2=rating_forms, username=username,
                                movies=movieArr, category=category, searchTerm=query, pagenum=pagenum)
 
@@ -103,17 +105,19 @@ def search_result_page(pagenum):
 
     category = request.form['category']
     query = request.form['searchTerm']
-
+    print("hub hub hub")
     if query and category:
+        print("blah blah blah")
         conn = getConnection()
         cur = conn.cursor()
         sqlStr = "SELECT * FROM moviedata WHERE " + str(category) + " = %s LIMIT 10 OFFSET %s"
         offset = int(pagenum)*10
         cur.execute(sqlStr, (query, offset))
-
+        print("arr arr arr")
         movieArr = []
         rating_forms = []
         for movie_info in cur.fetchall():
+            print(movie_info[0])
             cur_movie_obj = obj.createMovie(movie_info[0], movie_info[1], movie_info[2], movie_info[3], movie_info[8])
             movieArr.append(cur_movie_obj)
             rating_form = RatingForm()

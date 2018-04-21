@@ -97,6 +97,7 @@
 
             <div style = "font-size:20px; font-weight:bold; margin-left:25px">
                 {% for rating_form in form2 %}
+                <h>hi how are you</h>
                 <form action = "/insertRating" id="{{rating_form.movieId}}" method = post>
                     {% for subfield in rating_form.rating %}
                         {{ subfield.label }} {{ subfield }}
@@ -138,9 +139,7 @@
             </fieldset>
     </div>
 
-    <div style="font-size:35px;position:absolute;right:0px;top:155px">
-      <img src="https://www.planochildrensmedicalclinic.org/wp-content/uploads/2016/09/backgroundNEW.jpg" alt="Home" width="1614" height="638">
-      </div>
+
 
     <!-- TODO Display dynamic generation of results -->
 
