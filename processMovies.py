@@ -32,7 +32,7 @@ with open("imdbmovies.csv", "r") as csvfile:
         try:
             items = next(reader)
             items = processNull(items)
-            pline = "INSERT INTO moviedata(movieid, title, releaseYear, runtime, rating, numRatings, " + "numWins, numGenres, genre, actionMovie, adult, adventure, animation, biography, "
+            pline = "INSERT INTO heroku_37da5348cc1f7c7.moviedata(movieid, title, releaseYear, runtime, rating, numRatings, " + "numWins, numGenres, genre, actionMovie, adult, adventure, animation, biography, "
             pline = pline + "comedy, crime, documentary, drama, family, fantasy, filmNoir, "
             pline = pline +  "history, horror, mystery, romance, SciFi, short, sport, "
             pline = pline + "thriller, war, western) VALUES ("
