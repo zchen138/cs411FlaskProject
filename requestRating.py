@@ -74,6 +74,9 @@ def requestRating(_userid, _targetMovie, cur):
     else:
         predictedScore = userAvg  # Default value if no related data can be found
 
+    if predictedScore > 5:
+        predictedScore = 5
+
     return truncate(predictedScore, 2)
 
 
